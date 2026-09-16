@@ -69,11 +69,14 @@ class Orchestrator:
         # Deduplicate URLs
         discovered_urls = list(dict.fromkeys(discovered_urls))[:8]
 
-        # 3. Web Fetching & Snapshotting
+        # 3. Web Fetching & Snapshotting (Parallel Async)
         evidence_sources: List[EvidenceSource] = []
         discovered_texts = []
-        for url in discovered_urls:
-            doc = await self.web_fetcher.fetch_and_clean(url)
+        docs = await asyncio.gather(*[self.web_fetcher.fetch_and_clean(u) for u in discovered_urls], return_exceptions=True)
+        
+        for url, doc in zip(discovered_urls, docs):
+            if isinstance(doc, Exception) or not isinstance(doc, dict):
+                continue
             tier = TierClassifier.classify(url)
             src = EvidenceSource(
                 prospect_id=prospect.prospect_id,

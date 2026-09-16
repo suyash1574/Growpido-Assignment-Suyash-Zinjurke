@@ -369,13 +369,11 @@
         }
 
         animatePipelineStep(4, "Synthesizing 3 Strategic Presence Gaps via Groq LLaMA 3.3...");
-        setTimeout(() => {
-          pipelineStatus.classList.add('hidden');
-          submitBtn.disabled = false;
-          currentProspectId = data.prospect_id;
-          currentPipelineData = data;
-          renderHumanGate(data);
-        }, 800);
+        pipelineStatus.classList.add('hidden');
+        submitBtn.disabled = false;
+        currentProspectId = data.prospect_id;
+        currentPipelineData = data;
+        renderHumanGate(data);
 
       } catch (err) {
         alert("Pipeline Error: " + err.message);

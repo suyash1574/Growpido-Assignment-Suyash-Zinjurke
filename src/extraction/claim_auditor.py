@@ -67,4 +67,6 @@ class ClaimAuditor:
             )
             claims.append(claim)
 
-        return claims
+        # Prioritize and cap to the top 5 most material claims to ensure deep, responsive verification
+        claims.sort(key=lambda c: 0 if c.materiality.value == "HIGH" else (1 if c.materiality.value == "MEDIUM" else 2))
+        return claims[:5]
