@@ -1,0 +1,138 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Growpido Prospect Intelligence Engine API",
+    "version": "1.0.0",
+    "description": "API contracts for live OSINT ingestion, adversarial double-check verification, human gate review, and one-page diagnostic generation."
+  },
+  "paths": {
+    "/api/v1/research/start": {
+      "post": {
+        "summary": "Start Prospect Research",
+        "description": "Ingests public LinkedIn URL, initiates live OSINT discovery and claim extraction.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["linkedin_url"],
+                "properties": {
+                  "linkedin_url": { "type": "string", "format": "uri" },
+                  "region_hint": { "type": "string", "default": "UAE" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Research session initiated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "session_id": { "type": "string", "format": "uuid" },
+                    "status": { "type": "string", "example": "ACCEPTED" },
+                    "slug": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/research/{session_id}/claims": {
+      "get": {
+        "summary": "List Extracted Claims",
+        "description": "Returns all extracted claims with current verification status and evidence.",
+        "parameters": [
+          { "name": "session_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Claims list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "session_id": { "type": "string", "format": "uuid" },
+                    "claims": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ClaimDTO" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/review/override": {
+      "post": {
+        "summary": "Human Gate Status Override",
+        "description": "Allows advisor to override a claim status with mandatory audit rationale.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["session_id", "claim_id", "new_status", "override_rationale"],
+                "properties": {
+                  "session_id": { "type": "string", "format": "uuid" },
+                  "claim_id": { "type": "string", "format": "uuid" },
+                  "new_status": { "type": "string", "enum": ["VERIFIED", "PARTIALLY_VERIFIED", "UNVERIFIED"] },
+                  "override_rationale": { "type": "string", "minLength": 10 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Override recorded"
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostic/{session_id}": {
+      "get": {
+        "summary": "Get Final One-Page Diagnostic",
+        "description": "Renders verified facts, 3 strategic presence gaps, and refused claims.",
+        "parameters": [
+          { "name": "session_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "One-Page Diagnostic Document"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ClaimDTO": {
+        "type": "object",
+        "properties": {
+          "claim_id": { "type": "string", "format": "uuid" },
+          "claim_text": { "type": "string" },
+          "category": { "type": "string" },
+          "materiality": { "type": "string" },
+          "status": { "type": "string", "enum": ["VERIFIED", "PARTIALLY_VERIFIED", "UNVERIFIED"] },
+          "primary_source_url": { "type": "string", "nullable": true },
+          "check1_passed": { "type": "boolean" },
+          "check2_passed": { "type": "boolean" },
+          "contradiction_detected": { "type": "boolean" },
+          "refusal_code": { "type": "string", "nullable": true },
+          "refusal_reason": { "type": "string", "nullable": true }
+        }
+      }
+    }
+  }
+}
