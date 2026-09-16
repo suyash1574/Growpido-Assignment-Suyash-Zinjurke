@@ -176,6 +176,31 @@ class Database:
         rows = conn.execute("SELECT * FROM strategic_gaps WHERE prospect_id = ? ORDER BY rank ASC", (prospect_id,)).fetchall()
         return [dict(r) for r in rows]
 
+    def update_claim_status(self, claim_id: str, new_status: str, notes: str = "") -> bool:
+        conn = self.get_connection()
+        cur = conn.execute("""
+        UPDATE claims 
+        SET status = ?, human_override = 1, override_notes = ?
+        WHERE claim_id = ?
+        """, (new_status, notes, claim_id))
+        conn.commit()
+        return cur.rowcount > 0
+
+    def update_prospect_status(self, prospect_id: str, new_status: str) -> bool:
+        conn = self.get_connection()
+        cur = conn.execute("""
+        UPDATE prospects
+        SET status = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE prospect_id = ?
+        """, (new_status, prospect_id))
+        conn.commit()
+        return cur.rowcount > 0
+
+    def get_claim(self, claim_id: str) -> Optional[Dict[str, Any]]:
+        conn = self.get_connection()
+        row = conn.execute("SELECT * FROM claims WHERE claim_id = ?", (claim_id,)).fetchone()
+        return dict(row) if row else None
+
     def get_audit_log(self, prospect_id: str) -> List[Dict[str, Any]]:
         conn = self.get_connection()
         rows = conn.execute("SELECT * FROM audit_log WHERE prospect_id = ? ORDER BY timestamp ASC", (prospect_id,)).fetchall()

@@ -5,14 +5,15 @@
 [![Architecture](https://img.shields.io/badge/Architecture-Adversarial%20Multi--Agent-blue)](#)
 [![Human Gate](https://img.shields.io/badge/Human%20Gate-Interactive%20Sign--Off-orange)](#)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](#)
-[![UI](https://img.shields.io/badge/UI-Streamlit-red)](#)
+[![UI](https://img.shields.io/badge/UI-FastAPI%20Web%20Dashboard-green)](#)
+[![API](https://img.shields.io/badge/API-REST%20Swagger-blue)](#)
 
 ---
 
 ### 1. Executive Summary & Problem Statement
 Growpido advises top founders, CEOs, and fund managers on establishing commanding market authority. However, automating prospect research using generic LLMs creates unacceptable risks: **hallucinated metrics, ungrounded career claims, and citation laundering across bio aggregators.**
 
-The **Growpido Prospect to Diagnostic Engine** is an adversarial, fact-deterministic intelligence pipeline that incepts a public UAE executive LinkedIn profile URL, extracts discrete atomic claims, subjects each claim to **double-checked primary source verification**, systematically **refuses uncorroborated claims**, isolates the **three biggest strategic public presence gaps**, and outputs an executive-ready **One-Page Diagnostic** backed by an interactive **Human Gate** and cryptographic audit trail.
+The **Growpido Prospect to Diagnostic Engine** is an adversarial, fact-deterministic intelligence pipeline that incepts a public UAE executive LinkedIn profile URL, extracts discrete atomic claims, subjects each claim to **double-checked primary source verification**, systematically **refuses uncorroborated claims**, isolates the **three biggest strategic public presence gaps**, and outputs an executive-ready **One-Page Diagnostic** backed by an interactive **FastAPI Web UI**, Sovereign **Human Gate**, and cryptographic audit trail.
 
 **Core Inviolable Law:**
 > **Accuracy takes absolute precedence over completeness.** If a claim cannot be verified against authoritative primary evidence through two independent checks, it must be flagged, qualified, or systematically refused.
@@ -22,13 +23,14 @@ The **Growpido Prospect to Diagnostic Engine** is an adversarial, fact-determini
 ### 2. Track B Assignment Deliverable Highlights
 - **Target Executive Picked:** **Ronaldo Mouchawar** (Vice President of Amazon MENA; Co-Founder of Souq.com; Dubai, UAE).
 - **Primary Source Verification:** Double-checked against official corporate domains (`press.aboutamazon.com`, `amazon.ae`) and UAE trade registry portals (`adgm.com`).
+- **FastAPI Web UI & REST Engine:** Modern responsive web dashboard replacing Streamlit, featuring real-time pipeline status, Sovereign Human Gate, and One-Page Diagnostic rendering.
 - **3-State Claim Labeling:** Distinct `VERIFIED`, `PARTIALLY_VERIFIED`, and `UNVERIFIED` tags with live citation chips.
 - **Refused Claim Demonstrated:** Excluded an unverified third-party claim asserting a *"$50M personal angel investment portfolio"* under Refusal Code `REF-01` due to absence of primary regulatory filings.
 - **Three Strategic Gaps:**
   1. *Authority Under-Indexing:* Middle East's pioneer $580M tech exit is under-documented on his direct personal executive channels.
   2. *Channel Diversity Deficit:* Complete reliance on a passive LinkedIn profile; absent from Tier-1 international podcast archives and fireside series.
   3. *Narrative Fragmentation:* Conflates corporate Amazon VP responsibilities with private venture angel advisory without clear mandate boundaries.
-- **One-Page Diagnostic:** Rendered in high-density, professional C-suite layout.
+- **One-Page Diagnostic:** Rendered in high-density, professional C-suite layout with instant Markdown and JSON downloads.
 - **Honest Engineering Paragraph:** Discloses regional search API throttling, Arabic trade registry scan limitations, and mitigation roadmaps.
 
 ---
@@ -68,9 +70,10 @@ All documentation is synchronized from a unified source of truth with strict ID 
             │ Submits LinkedIn URL
             ▼
 ┌───────────────────────┐
-│     STREAMLIT UI      │
+│   FASTAPI WEB UI      │
+│   (HTML5 + Tailwind)  │
 └───────────┬───────────┘
-            │
+            │ REST Calls: /api/research, /api/claims/override
             ▼
 ┌───────────────────────┐
 │ RESEARCH ORCHESTRATOR │
@@ -105,10 +108,12 @@ All documentation is synchronized from a unified source of truth with strict ID 
                              ▼
                   ┌────────────────────┐
                   │  HUMAN GATE REVIEW │
+                  │ (/claims/override) │
                   └──────────┬─────────┘
                              ▼
                   ┌────────────────────┐
                   │ONE-PAGE DIAGNOSTIC │
+                  │  (Markdown & JSON) │
                   └────────────────────┘
 ```
 
@@ -118,27 +123,29 @@ All documentation is synchronized from a unified source of truth with strict ID 
 
 #### Prerequisites
 - Python `3.11+`
-- Valid Gemini or OpenAI API Key
-- Tavily API Key (or use built-in DuckDuckGo fallback)
+- Groq API Key (`openai/gpt-oss-120b` or `llama-3.3-70b-versatile`)
+- Tavily API Key (or built-in live DuckDuckGo fallback)
 
-#### Installation
+#### Installation & Running
 ```bash
 # 1. Clone repository
-git clone https://github.com/your-org/growpido-prospect-intelligence.git
-cd growpido-prospect-intelligence
+git clone https://github.com/suyash1574/Growpido-Assignment-Suyash-Zinjurke.git
+cd Growpido
 
 # 2. Set up virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: .\venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1  # On Linux/macOS: source venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configure environment
-cp .env.example .env
+# 4. Configure environment (.env)
+# Set GROQ_API_KEY, TAVILY_API_KEY, etc.
 
-# 5. Run application
-streamlit run src/app.py
+# 5. Run FastAPI Application & Web UI
+uvicorn src.server:app --reload --port 8000
+# Access interactive dashboard at: http://localhost:8000
+# Access Swagger API documentation at: http://localhost:8000/docs
 ```
 
 ---

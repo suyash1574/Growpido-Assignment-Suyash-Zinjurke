@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Growpido — Executive Prospect Intelligence Engine (Track B)</title>
+  <!-- TailwindCSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .gradient-border {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+    }
+    .pulse-glow {
+      animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6)); }
+      50% { opacity: .7; filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.2)); }
+    }
+  </style>
+</head>
+<body class="h-full font-sans antialiased selection:bg-indigo-500 selection:text-white">
+  <div class="min-h-full flex flex-col">
+    <!-- Navigation Bar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <i class="fa-solid fa-brain text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-white tracking-wide">GROWPIDO <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">TRACK B: INTELLIGENCE</span></h1>
+            <p class="text-xs text-slate-400">Zero-Hallucination Adversarial Verification & Strategic Presence Gaps</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+            Groq LLaMA 3.3 Active
+          </span>
+          <a href="/docs" target="_blank" class="text-xs text-slate-400 hover:text-white transition flex items-center space-x-1">
+            <i class="fa-solid fa-code"></i>
+            <span>Swagger API</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      
+      <!-- Law of Absolute Accuracy Banner -->
+      <div class="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex items-start space-x-4">
+        <div class="text-amber-400 text-xl mt-0.5">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="text-sm">
+          <span class="font-semibold text-amber-200">Track B Inviolable Grounding Law:</span>
+          <span class="text-slate-300"> Accuracy takes absolute precedence over completeness. Every executive claim undergoes double-checked verification against primary registers (Tier-1 anchors). Uncorroborated assertions are strictly quarantined.</span>
+        </div>
+      </div>
+
+      <!-- Ingestion & Benchmark Picker Section -->
+      <section class="gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div class="max-w-3xl">
+          <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+            <span class="flex h-6 w-6 rounded-full bg-indigo-600 text-xs items-center justify-center text-white">1</span>
+            <span>Prospect Ingestion & OSINT Target Selection</span>
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">Provide a canonical LinkedIn public profile URL to trigger live adversarial discovery.</p>
+        </div>
+
+        <!-- Quick Benchmark Selector -->
+        <div class="mt-4 p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center space-x-3 text-sm">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Benchmark Target:</span>
+            <span class="font-medium text-white">Ronaldo Mouchawar</span>
+            <span class="text-xs text-slate-400">(VP Amazon MENA, Co-Founder Souq.com)</span>
+          </div>
+          <button id="btn-prefill" type="button" class="text-xs px-3 py-1.5 rounded-md bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 border border-indigo-500/40 transition flex items-center space-x-1.5">
+            <i class="fa-solid fa-bolt text-indigo-400"></i>
+            <span>Load Assessment Target</span>
+          </button>
+        </div>
+
+        <!-- Ingestion Form -->
+        <form id="research-form" class="mt-6 flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+              <i class="fa-brands fa-linkedin text-lg"></i>
+            </div>
+            <input 
+              type="url" 
+              id="linkedin-url" 
+              required
+              placeholder="https://www.linkedin.com/in/ronaldo-mouchawar-souq" 
+              class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            >
+          </div>
+          <button 
+            type="submit" 
+            id="submit-btn"
+            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center space-x-2 text-sm shrink-0"
+          >
+            <i class="fa-solid fa-satellite-dish"></i>
+            <span>Run Intelligence Pipeline</span>
+          </button>
+        </form>
+
+        <!-- Progress Spinner & Status Box -->
+        <div id="pipeline-status" class="hidden mt-6 p-5 rounded-xl bg-slate-900/90 border border-indigo-500/30 space-y-4">
+          <div class="flex items-center space-x-3">
+            <div class="animate-spin text-indigo-400 text-lg">
+              <i class="fa-solid fa-circle-notch"></i>
+            </div>
+            <div class="text-sm font-medium text-white" id="status-headline">Executing Live Intelligence Pipeline...</div>
+          </div>
+          <!-- Step Indicators -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+            <div id="step-1" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
+              <span class="h-2 w-2 rounded-full bg-slate-600" id="step-1-dot"></span>
+              <span>1. Canonical Ingest</span>
+            </div>
+            <div id="step-2" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
+              <span class="h-2 w-2 rounded-full bg-slate-600" id="step-2-dot"></span>
+              <span>2. OSINT Web Crawl</span>
+            </div>
+            <div id="step-3" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
+              <span class="h-2 w-2 rounded-full bg-slate-600" id="step-3-dot"></span>
+              <span>3. Double-Check Audit</span>
+            </div>
+            <div id="step-4" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
+              <span class="h-2 w-2 rounded-full bg-slate-600" id="step-4-dot"></span>
+              <span>4. Strategic Synthesis</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sovereign Human Gate Review Section -->
+      <section id="human-gate-section" class="hidden gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="flex h-6 w-6 rounded-full bg-amber-500 text-xs items-center justify-center text-slate-950 font-bold">2</span>
+              <h2 class="text-xl font-bold text-white">Sovereign Human-in-the-Loop Review Gate</h2>
+            </div>
+            <p class="text-sm text-slate-400 mt-1">Review extracted claims, verify Tier-1 primary source citations, and adjudicate contradiction flags before compilation.</p>
+          </div>
+          <button 
+            id="btn-approve-diagnostic"
+            type="button"
+            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl shadow-lg shadow-emerald-600/20 text-sm flex items-center space-x-2 transition self-start md:self-auto"
+          >
+            <i class="fa-solid fa-stamp"></i>
+            <span>Approve & Compile Diagnostic</span>
+          </button>
+        </div>
+
+        <!-- Metric Summary Chips -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-400">Verified (Double-Checked)</div>
+              <div class="text-2xl font-bold text-emerald-400 mt-1" id="count-verified">0</div>
+            </div>
+            <i class="fa-solid fa-check-double text-emerald-500 text-xl"></i>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900 border border-amber-500/30 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-400">Partially Verified / Flagged</div>
+              <div class="text-2xl font-bold text-amber-400 mt-1" id="count-partial">0</div>
+            </div>
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xl"></i>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900 border border-rose-500/30 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-400">Adversarially Quarantined</div>
+              <div class="text-2xl font-bold text-rose-400 mt-1" id="count-refused">0</div>
+            </div>
+            <i class="fa-solid fa-ban text-rose-500 text-xl"></i>
+          </div>
+        </div>
+
+        <!-- Claims Staging List -->
+        <div class="space-y-3" id="claims-container">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Executive Diagnostic View Section -->
+      <section id="diagnostic-section" class="hidden space-y-6">
+        <div class="gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <i class="fa-solid fa-circle-check mr-1"></i> Diagnostic Approved
+              </span>
+              <h2 class="text-2xl font-bold text-white mt-2" id="diag-prospect-name">Executive Briefing</h2>
+              <p class="text-sm text-slate-400" id="diag-prospect-role">Role & Company</p>
+            </div>
+            <!-- Export Downloads -->
+            <div class="flex items-center space-x-3">
+              <button 
+                id="btn-download-md"
+                class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-medium border border-slate-700 flex items-center space-x-2 transition"
+              >
+                <i class="fa-solid fa-file-arrow-down text-cyan-400"></i>
+                <span>Download Markdown</span>
+              </button>
+              <button 
+                id="btn-download-json"
+                class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-medium border border-slate-700 flex items-center space-x-2 transition"
+              >
+                <i class="fa-solid fa-code text-amber-400"></i>
+                <span>Export Audit JSON</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 1: Grounded Fact Dossier -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i class="fa-solid fa-clipboard-check text-indigo-400"></i>
+              <span>1. Verified Executive Fact Dossier</span>
+            </h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-300">
+                <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4">Category</th>
+                    <th class="py-3 px-4">Factual Assertion</th>
+                    <th class="py-3 px-4">Primary Source (Tier-1)</th>
+                    <th class="py-3 px-4">Corroboration Check</th>
+                  </tr>
+                </thead>
+                <tbody id="dossier-table-body" class="divide-y divide-slate-800/60">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 2: Three Strategic Gaps -->
+          <div class="space-y-4 pt-4 border-t border-slate-800">
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i class="fa-solid fa-chart-line text-cyan-400"></i>
+              <span>2. Three Biggest Strategic Presence Gaps</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="strategic-gaps-grid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Section 3: Demonstrated Adversarial Refusal -->
+          <div class="space-y-3 pt-4 border-t border-slate-800">
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i class="fa-solid fa-shield-xmark text-rose-400"></i>
+              <span>3. Adversarial Refusal Demonstration (Track B Mandate)</span>
+            </h3>
+            <div id="refusal-card" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-5 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold" id="refusal-code">REF-01</span>
+                <span class="text-xs text-rose-300 font-medium">Mandatory Hallucination Prevention Protocol</span>
+              </div>
+              <p class="text-sm font-semibold text-white italic" id="refusal-claim">"Demonstrated unverified claim quarantined by system."</p>
+              <p class="text-xs text-slate-300" id="refusal-reason">Causal Rationale explaining lack of primary evidence.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-900/40 py-6">
+      <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+        Growpido Track B Executive Intelligence Engine • Built with FastAPI, SQLite WAL, Groq LLaMA, and Live OSINT.
+      </div>
+    </footer>
+  </div>
+
+  <!-- Human Override Modal -->
+  <div id="override-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h4 class="font-bold text-white text-base">Human Gate Claim Adjudication</h4>
+        <button id="close-modal-btn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div>
+        <p class="text-xs text-slate-400">Claim to Adjudicate:</p>
+        <p class="text-sm text-slate-200 mt-1 font-medium italic" id="modal-claim-text"></p>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Select New Status</label>
+        <select id="modal-status-select" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:ring-2 focus:ring-indigo-500">
+          <option value="VERIFIED">VERIFIED (Double-checked & Entailed)</option>
+          <option value="PARTIALLY_VERIFIED">PARTIALLY_VERIFIED (Single source / minor variance)</option>
+          <option value="UNVERIFIED">UNVERIFIED (Quarantined / Contradicted)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Mandatory Override Rationale</label>
+        <textarea id="modal-override-notes" rows="3" placeholder="State advisor rationale and primary corroborating evidence..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500"></textarea>
+      </div>
+      <div class="flex justify-end space-x-3 pt-2">
+        <button id="modal-cancel-btn" type="button" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button>
+        <button id="modal-save-btn" type="button" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg text-xs shadow-lg shadow-indigo-600/30">Save Override</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Frontend JavaScript -->
+  <script>
+    let currentProspectId = null;
+    let currentPipelineData = null;
+    let activeModalClaimId = null;
+
+    // Elements
+    const researchForm = document.getElementById('research-form');
+    const linkedinInput = document.getElementById('linkedin-url');
+    const btnPrefill = document.getElementById('btn-prefill');
+    const submitBtn = document.getElementById('submit-btn');
+    const pipelineStatus = document.getElementById('pipeline-status');
+    const statusHeadline = document.getElementById('status-headline');
+    const humanGateSection = document.getElementById('human-gate-section');
+    const diagnosticSection = document.getElementById('diagnostic-section');
+    const btnApprove = document.getElementById('btn-approve-diagnostic');
+    const btnDownloadMd = document.getElementById('btn-download-md');
+    const btnDownloadJson = document.getElementById('btn-download-json');
+    const overrideModal = document.getElementById('override-modal');
+
+    // Prefill Target
+    btnPrefill.addEventListener('click', () => {
+      linkedinInput.value = 'https://www.linkedin.com/in/ronaldo-mouchawar-souq';
+      linkedinInput.focus();
+    });
+
+    // Run Pipeline
+    researchForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const url = linkedinInput.value.trim();
+      if (!url) return;
+
+      submitBtn.disabled = true;
+      pipelineStatus.classList.remove('hidden');
+      humanGateSection.classList.add('hidden');
+      diagnosticSection.classList.add('hidden');
+
+      // Animate progress steps
+      animatePipelineStep(1, "Parsing canonical profile & resolving registry anchors...");
+      setTimeout(() => animatePipelineStep(2, "Executing live OSINT search across news, corporate filings & ADGM/DIFC..."), 1200);
+      setTimeout(() => animatePipelineStep(3, "Extracting atomic claims & running Check 1 & Check 2 double-checks..."), 3000);
+
+      try {
+        const resp = await fetch('/api/research', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ linkedin_url: url })
+        });
+
+        const data = await resp.json();
+        if (!resp.ok) {
+          throw new Error(data.detail || "Pipeline failed");
+        }
+
+        animatePipelineStep(4, "Synthesizing 3 Strategic Presence Gaps via Groq LLaMA 3.3...");
+        setTimeout(() => {
+          pipelineStatus.classList.add('hidden');
+          submitBtn.disabled = false;
+          currentProspectId = data.prospect_id;
+          currentPipelineData = data;
+          renderHumanGate(data);
+        }, 800);
+
+      } catch (err) {
+        alert("Pipeline Error: " + err.message);
+        pipelineStatus.classList.add('hidden');
+        submitBtn.disabled = false;
+      }
+    });
+
+    function animatePipelineStep(stepNum, text) {
+      statusHeadline.textContent = text;
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`step-${i}-dot`);
+        const block = document.getElementById(`step-${i}`);
+        if (i < stepNum) {
+          dot.className = "h-2 w-2 rounded-full bg-emerald-400";
+          block.className = "p-2.5 rounded-lg bg-emerald-950/30 text-emerald-300 border border-emerald-500/40 flex items-center space-x-2";
+        } else if (i === stepNum) {
+          dot.className = "h-2 w-2 rounded-full bg-indigo-400 animate-ping";
+          block.className = "p-2.5 rounded-lg bg-indigo-950/40 text-indigo-300 border border-indigo-500/50 flex items-center space-x-2";
+        } else {
+          dot.className = "h-2 w-2 rounded-full bg-slate-600";
+          block.className = "p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2";
+        }
+      }
+    }
+
+    // Render Human Gate
+    function renderHumanGate(data) {
+      humanGateSection.classList.remove('hidden');
+      humanGateSection.scrollIntoView({ behavior: 'smooth' });
+
+      const claims = data.claims || [];
+      const verified = claims.filter(c => c.status === 'VERIFIED').length;
+      const partial = claims.filter(c => c.status === 'PARTIALLY_VERIFIED').length;
+      const refused = claims.filter(c => c.status === 'UNVERIFIED' || c.refusal_code).length;
+
+      document.getElementById('count-verified').textContent = verified;
+      document.getElementById('count-partial').textContent = partial;
+      document.getElementById('count-refused').textContent = refused;
+
+      const container = document.getElementById('claims-container');
+      container.innerHTML = '';
+
+      claims.forEach((claim, idx) => {
+        const card = document.createElement('div');
+        const badgeColor = claim.status === 'VERIFIED' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 
+                          (claim.status === 'PARTIALLY_VERIFIED' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30');
+
+        card.className = "p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition space-y-3";
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-mono px-2 py-0.5 rounded border ${badgeColor} font-bold">${claim.status}</span>
+              <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">${claim.category}</span>
+              <span class="text-xs text-slate-500">| Materiality: <b class="text-slate-300">${claim.materiality}</b></span>
+            </div>
+            <button class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center space-x-1" onclick="openOverrideModal('${claim.claim_id}', '${escapeHtml(claim.claim_text)}', '${claim.status}')">
+              <i class="fa-solid fa-pen-to-square"></i>
+              <span>Adjudicate</span>
+            </button>
+          </div>
+          <p class="text-sm font-medium text-white">${claim.claim_text}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-400 pt-1 border-t border-slate-800/80">
+            <div>
+              <span class="text-slate-500">Check 1 (Primary):</span> 
+              <span class="${claim.check1_passed ? 'text-emerald-400' : 'text-rose-400'} font-semibold">${claim.check1_passed ? 'PASSED' : 'FAILED'}</span>
+              ${claim.primary_source_url ? `<a href="${claim.primary_source_url}" target="_blank" class="block truncate text-indigo-400 hover:underline mt-0.5">🔗 ${claim.primary_source_url}</a>` : ''}
+            </div>
+            <div>
+              <span class="text-slate-500">Check 2 (Corroboration):</span> 
+              <span class="${claim.check2_passed ? 'text-emerald-400' : 'text-rose-400'} font-semibold">${claim.check2_passed ? 'PASSED' : 'FAILED'}</span>
+              ${claim.secondary_source_url ? `<a href="${claim.secondary_source_url}" target="_blank" class="block truncate text-indigo-400 hover:underline mt-0.5">🔗 ${claim.secondary_source_url}</a>` : ''}
+            </div>
+          </div>
+          ${claim.contradiction_detected ? `
+            <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-center space-x-2">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <span><b>Contradiction Detected:</b> ${claim.contradiction_details || 'Conflict identified across sources'}</span>
+            </div>
+          ` : ''}
+          ${claim.refusal_code ? `
+            <div class="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 flex items-center space-x-2">
+              <i class="fa-solid fa-ban"></i>
+              <span><b>Refusal Code:</b> ${claim.refusal_code} — ${claim.refusal_reason}</span>
+            </div>
+          ` : ''}
+          ${claim.human_override ? `
+            <div class="text-xs text-cyan-400 flex items-center space-x-1.5 pt-1">
+              <i class="fa-solid fa-user-check"></i>
+              <span><b>Human Override Applied:</b> ${claim.override_notes || 'Manual review by advisor'}</span>
+            </div>
+          ` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Modal Handling
+    window.openOverrideModal = function(claimId, text, status) {
+      activeModalClaimId = claimId;
+      document.getElementById('modal-claim-text').textContent = text;
+      document.getElementById('modal-status-select').value = status;
+      document.getElementById('modal-override-notes').value = '';
+      overrideModal.classList.remove('hidden');
+    };
+
+    document.getElementById('close-modal-btn').addEventListener('click', () => overrideModal.classList.add('hidden'));
+    document.getElementById('modal-cancel-btn').addEventListener('click', () => overrideModal.classList.add('hidden'));
+
+    document.getElementById('modal-save-btn').addEventListener('click', async () => {
+      const newStatus = document.getElementById('modal-status-select').value;
+      const notes = document.getElementById('modal-override-notes').value.trim() || 'Manual advisor override';
+
+      try {
+        const resp = await fetch(`/api/claims/${activeModalClaimId}/override`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus, override_notes: notes })
+        });
+
+        if (!resp.ok) throw new Error("Failed to save override");
+
+        // Update local object & rerender
+        const claim = currentPipelineData.claims.find(c => c.claim_id === activeModalClaimId);
+        if (claim) {
+          claim.status = newStatus;
+          claim.human_override = true;
+          claim.override_notes = notes;
+        }
+        overrideModal.classList.add('hidden');
+        renderHumanGate(currentPipelineData);
+      } catch (err) {
+        alert("Error saving override: " + err.message);
+      }
+    });
+
+    // Approve & Compile Diagnostic
+    btnApprove.addEventListener('click', async () => {
+      if (!currentProspectId) return;
+
+      try {
+        const resp = await fetch(`/api/prospects/${currentProspectId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reviewer_notes: "Advisor sign-off at Human Gate" })
+        });
+
+        if (!resp.ok) throw new Error("Approval failed");
+
+        renderDiagnosticView(currentPipelineData);
+      } catch (err) {
+        alert("Error approving diagnostic: " + err.message);
+      }
+    });
+
+    // Render Diagnostic View
+    function renderDiagnosticView(data) {
+      diagnosticSection.classList.remove('hidden');
+      diagnosticSection.scrollIntoView({ behavior: 'smooth' });
+
+      const prospect = data.prospect;
+      document.getElementById('diag-prospect-name').textContent = `Executive Briefing: ${prospect.full_name}`;
+      document.getElementById('diag-prospect-role').textContent = `${prospect.primary_role || 'Senior Leader'} | ${prospect.current_company || 'UAE Tech Ecosystem'} | ${prospect.location_country}`;
+
+      // 1. Table
+      const tbody = document.getElementById('dossier-table-body');
+      tbody.innerHTML = '';
+      const verifiedClaims = data.claims.filter(c => c.status === 'VERIFIED');
+      const partialClaims = data.claims.filter(c => c.status === 'PARTIALLY_VERIFIED');
+
+      [...verifiedClaims, ...partialClaims].forEach(c => {
+        const tr = document.createElement('tr');
+        const badge = c.status === 'VERIFIED' ? 
+          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-400">VERIFIED</span>` :
+          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500/20 text-amber-400">PARTIAL</span>`;
+
+        const src = c.primary_source_url ? `<a href="${c.primary_source_url}" target="_blank" class="text-indigo-400 hover:underline">${c.primary_source_url.slice(0, 30)}...</a>` : 'Corporate Press';
+        const corrob = c.secondary_source_url ? `<a href="${c.secondary_source_url}" target="_blank" class="text-cyan-400 hover:underline">${c.secondary_source_url.slice(0, 25)}...</a>` : 'Confirmed by Registry';
+
+        tr.innerHTML = `
+          <td class="py-3 px-4">${badge}</td>
+          <td class="py-3 px-4 text-xs font-semibold text-slate-400">${c.category}</td>
+          <td class="py-3 px-4 font-medium text-white">${c.claim_text}</td>
+          <td class="py-3 px-4 text-xs">${src}</td>
+          <td class="py-3 px-4 text-xs">${corrob}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 2. Gaps
+      const gapsGrid = document.getElementById('strategic-gaps-grid');
+      gapsGrid.innerHTML = '';
+      (data.gaps || []).forEach(g => {
+        const card = document.createElement('div');
+        card.className = "p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3 flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">GAP #${g.rank}</span>
+              <span class="text-xs text-slate-400 uppercase font-semibold">${g.dimension.replace('_', ' ')}</span>
+            </div>
+            <h4 class="text-base font-bold text-white mt-2">${g.title}</h4>
+            <p class="text-xs text-slate-300 mt-2"><b>Observation:</b> ${g.observation}</p>
+            <p class="text-xs text-amber-300/90 mt-2"><b>Strategic Impact:</b> ${g.strategic_impact}</p>
+          </div>
+          <div class="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-200">
+            <b>Growpido Advisory:</b> ${g.recommendation}
+          </div>
+        `;
+        gapsGrid.appendChild(card);
+      });
+
+      // 3. Refusal Card
+      const refused = data.claims.find(c => c.refusal_code);
+      if (refused) {
+        document.getElementById('refusal-code').textContent = refused.refusal_code;
+        document.getElementById('refusal-claim').textContent = `"${refused.claim_text}"`;
+        document.getElementById('refusal-reason').textContent = refused.refusal_reason;
+      }
+
+      // Download handlers
+      btnDownloadMd.onclick = () => window.open(`/api/prospects/${currentProspectId}/diagnostic/markdown`, '_blank');
+      btnDownloadJson.onclick = () => window.open(`/api/prospects/${currentProspectId}/diagnostic/json`, '_blank');
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
+  </script>
+</body>
+</html>
