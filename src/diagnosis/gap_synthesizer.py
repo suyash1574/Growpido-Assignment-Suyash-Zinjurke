@@ -1,15 +1,15 @@
 import json
 from uuid import UUID
 from typing import List, Optional
-from groq import Groq
-from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.llm_client import llm_client, UnifiedLLMClient
 from src.storage.models import StrategicGap, GapDimension, Claim, ClaimStatus
 
 class GapSynthesizer:
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or GROQ_API_KEY
-        self.model = model or GROQ_MODEL
-        self.client = Groq(api_key=self.api_key) if self.api_key else None
+        if api_key or model:
+            self.client = UnifiedLLMClient(groq_api_key=api_key, groq_model=model)
+        else:
+            self.client = llm_client
 
     def synthesize_gaps(self, prospect_id: UUID, candidate_name: str, verified_claims: List[Claim]) -> List[StrategicGap]:
         """
@@ -74,13 +74,11 @@ class GapSynthesizer:
         )
 
         try:
-            resp = self.client.chat.completions.create(
-                model=self.model,
+            data = self.client.chat_completion_json(
                 messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
+                max_tokens=800,
                 temperature=0.2
             )
-            data = json.loads(resp.choices[0].message.content)
             items = data.get("gaps", [])
             gaps = []
             for item in items[:3]:

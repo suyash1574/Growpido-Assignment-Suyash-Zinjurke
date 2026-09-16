@@ -1,14 +1,14 @@
 import json
 from typing import List, Dict, Any, Optional
-from groq import Groq
-from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.llm_client import llm_client, UnifiedLLMClient
 from src.storage.models import Claim, EvidenceSource, SourceTier
 
 class DoubleChecker:
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or GROQ_API_KEY
-        self.model = model or GROQ_MODEL
-        self.client = Groq(api_key=self.api_key) if self.api_key else None
+        if api_key or model:
+            self.client = UnifiedLLMClient(groq_api_key=api_key, groq_model=model)
+        else:
+            self.client = llm_client
 
     def evaluate_check1_primary(self, claim: Claim, sources: List[EvidenceSource]) -> Dict[str, Any]:
         """
@@ -22,9 +22,6 @@ class DoubleChecker:
                 "primary_source": None,
                 "reason": "No Tier-1 primary source exists in evidence set."
             }
-
-        if not self.client:
-            return {"passed": False, "primary_source": None, "reason": "LLM client missing."}
 
         # Evaluate entailment against Tier 1 sources
         for src in tier1_sources:
@@ -48,13 +45,11 @@ class DoubleChecker:
             )
 
             try:
-                resp = self.client.chat.completions.create(
-                    model=self.model,
+                res = self.client.chat_completion_json(
                     messages=[{"role": "user", "content": prompt}],
-                    response_format={"type": "json_object"},
+                    max_tokens=300,
                     temperature=0.0
                 )
-                res = json.loads(resp.choices[0].message.content)
                 if res.get("entailed") is True:
                     return {
                         "passed": True,

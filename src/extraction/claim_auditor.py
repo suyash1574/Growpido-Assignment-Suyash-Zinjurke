@@ -1,25 +1,22 @@
 import json
 from uuid import UUID
 from typing import List, Dict, Any, Optional
-from groq import Groq
-from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.llm_client import llm_client, UnifiedLLMClient
 from src.storage.models import Claim, ClaimCategory
 from src.extraction.materiality import MaterialityScorer
 
 class ClaimAuditor:
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or GROQ_API_KEY
-        self.model = model or GROQ_MODEL
-        self.client = Groq(api_key=self.api_key) if self.api_key else None
+        if api_key or model:
+            self.client = UnifiedLLMClient(groq_api_key=api_key, groq_model=model)
+        else:
+            self.client = llm_client
 
     def extract_claims(self, prospect_id: UUID, candidate_name: str, discovered_texts: List[str]) -> List[Claim]:
         """
-        Decomposes unstructured OSINT text into isolated atomic factual claims using Groq.
+        Decomposes unstructured OSINT text into isolated atomic factual claims using Groq with NVIDIA failover.
         """
-        if not self.client:
-            raise RuntimeError("Groq API Key is not configured. Please supply a valid GROQ_API_KEY in .env.")
-
-        combined_text = "\n---\n".join(discovered_texts[:8])[:12000]
+        combined_text = "\n---\n".join(discovered_texts[:8])[:10000]
 
         system_prompt = (
             "You are an adversarial forensic Claim Auditor for an executive fact-checking engine. "
@@ -32,18 +29,12 @@ class ClaimAuditor:
             "5. Do NOT include opinions or vague PR slogans."
         )
 
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Extract atomic claims for {candidate_name} from this public text:\n\n{combined_text}"}
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.1
-        )
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Extract atomic claims for {candidate_name} from this public text:\n\n{combined_text}"}
+        ]
 
-        raw_json = response.choices[0].message.content
-        data = json.loads(raw_json)
+        data = self.client.chat_completion_json(messages=messages, max_tokens=800, temperature=0.1)
         extracted = data.get("claims", [])
 
         claims = []
