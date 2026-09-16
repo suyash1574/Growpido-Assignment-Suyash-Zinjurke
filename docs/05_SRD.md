@@ -4,7 +4,7 @@
 ---
 
 ### 1. System Overview & Technology Stack
-The Growpido Prospect to Diagnostic Engine is an agentic, fact-deterministic intelligence pipeline implemented in **Python 3.11+**, utilizing a modular micro-service architecture with a reactive **Streamlit** presentation tier, structured schema validation via **Pydantic v2**, persistent audit storage via **SQLite**, and an asynchronous LLM orchestration layer powered by **Google Gemini 2.5 / OpenAI GPT-4o** with strict function calling and structured outputs.
+The Growpido Prospect to Diagnostic Engine is an agentic, fact-deterministic intelligence pipeline implemented in **Python 3.11+**, utilizing a modular micro-service architecture with a reactive **Streamlit** presentation tier, structured schema validation via **Pydantic v2**, persistent audit storage via **SQLite**, and an asynchronous LLM orchestration layer powered by **Groq (Llama 3.3 70B Versatile / Llama 3.1 70B)** for sub-second, low-latency structured reasoning and adversarial claim auditing.
 
 ---
 
