@@ -1,0 +1,71 @@
+import json
+from typing import List, Dict, Any, Optional
+from groq import Groq
+from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.storage.models import Claim, EvidenceSource, SourceTier
+
+class DoubleChecker:
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.api_key = api_key or GROQ_API_KEY
+        self.model = model or GROQ_MODEL
+        self.client = Groq(api_key=self.api_key) if self.api_key else None
+
+    def evaluate_check1_primary(self, claim: Claim, sources: List[EvidenceSource]) -> Dict[str, Any]:
+        """
+        Check 1: Checks if any Tier-1 Primary source explicitly entails the claim.
+        Returns {'passed': bool, 'primary_source': EvidenceSource or None, 'reason': str}
+        """
+        tier1_sources = [s for s in sources if s.source_tier == SourceTier.TIER_1_PRIMARY]
+        if not tier1_sources:
+            return {
+                "passed": False,
+                "primary_source": None,
+                "reason": "No Tier-1 primary source exists in evidence set."
+            }
+
+        if not self.client:
+            return {"passed": False, "primary_source": None, "reason": "LLM client missing."}
+
+        # Evaluate entailment against Tier 1 sources
+        for src in tier1_sources:
+            snippet = src.raw_text_snippet or ""
+            if not snippet:
+                continue
+
+            # Quick token/string check first (relaxed to check for key entities)
+            words = [w.lower() for w in claim.claim_text.replace(",", "").replace(".", "").split() if len(w) > 3]
+            match_count = sum(1 for w in words if w in snippet.lower())
+            if len(words) > 0 and match_count == 0:
+                continue
+
+            prompt = (
+                "You are an adversarial fact verification auditor. "
+                "Determine if the Source Passage strictly entails the Claim.\n\n"
+                f"Claim: \"{claim.claim_text}\"\n"
+                f"Source URL: {src.url}\n"
+                f"Source Snippet: {snippet[:2000]}\n\n"
+                "Return JSON with keys: 'entailed' (true/false) and 'explanation'."
+            )
+
+            try:
+                resp = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[{"role": "user", "content": prompt}],
+                    response_format={"type": "json_object"},
+                    temperature=0.0
+                )
+                res = json.loads(resp.choices[0].message.content)
+                if res.get("entailed") is True:
+                    return {
+                        "passed": True,
+                        "primary_source": src,
+                        "reason": res.get("explanation", "Tier-1 source entails claim.")
+                    }
+            except Exception:
+                continue
+
+        return {
+            "passed": False,
+            "primary_source": None,
+            "reason": "Tier-1 sources found but none semantically entailed the claim."
+        }

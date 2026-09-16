@@ -1,0 +1,70 @@
+import json
+from uuid import UUID
+from typing import List, Dict, Any, Optional
+from groq import Groq
+from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.storage.models import Claim, ClaimCategory
+from src.extraction.materiality import MaterialityScorer
+
+class ClaimAuditor:
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.api_key = api_key or GROQ_API_KEY
+        self.model = model or GROQ_MODEL
+        self.client = Groq(api_key=self.api_key) if self.api_key else None
+
+    def extract_claims(self, prospect_id: UUID, candidate_name: str, discovered_texts: List[str]) -> List[Claim]:
+        """
+        Decomposes unstructured OSINT text into isolated atomic factual claims using Groq.
+        """
+        if not self.client:
+            raise RuntimeError("Groq API Key is not configured. Please supply a valid GROQ_API_KEY in .env.")
+
+        combined_text = "\n---\n".join(discovered_texts[:8])[:12000]
+
+        system_prompt = (
+            "You are an adversarial forensic Claim Auditor for an executive fact-checking engine. "
+            f"Your job is to extract discrete, atomic factual claims about the executive prospect: {candidate_name}.\n\n"
+            "RULES:\n"
+            "1. Each claim must be a single, self-contained atomic proposition with exactly one predicate.\n"
+            "2. Split multi-fact sentences into separate claims.\n"
+            "3. Categorize each claim into: ROLE_TENURE, FUNDING_FINANCIAL, EDUCATION_CREDENTIAL, ACCOLADE_AWARD, GOVERNANCE_BOARD, or THOUGHT_LEADERSHIP.\n"
+            "4. Return a JSON object with key 'claims', where each item has 'claim_text' and 'category'.\n"
+            "5. Do NOT include opinions or vague PR slogans."
+        )
+
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Extract atomic claims for {candidate_name} from this public text:\n\n{combined_text}"}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1
+        )
+
+        raw_json = response.choices[0].message.content
+        data = json.loads(raw_json)
+        extracted = data.get("claims", [])
+
+        claims = []
+        for item in extracted:
+            cat_str = item.get("category", "ROLE_TENURE")
+            try:
+                category = ClaimCategory(cat_str)
+            except ValueError:
+                category = ClaimCategory.ROLE_TENURE
+
+            text = item.get("claim_text", "").strip()
+            if not text:
+                continue
+
+            materiality = MaterialityScorer.score(text, category)
+            claim = Claim(
+                prospect_id=prospect_id,
+                claim_text=text,
+                category=category,
+                materiality=materiality
+            )
+            claims.append(claim)
+
+        return claims
