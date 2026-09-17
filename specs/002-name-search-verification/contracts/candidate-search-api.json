@@ -1,0 +1,219 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Growpido Candidate Search & Disambiguation API",
+    "version": "2.0.0",
+    "description": "API contracts for name-based prospect discovery, candidate confirmation gate, and global verification."
+  },
+  "paths": {
+    "/api/search/candidates": {
+      "post": {
+        "summary": "Search public business profiles by name",
+        "description": "Performs OSINT public network discovery to find candidate profiles matching a name and optional context keywords.",
+        "operationId": "searchCandidates",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CandidateSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of matching candidate profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid search parameters"
+          },
+          "500": {
+            "description": "Search discovery failure"
+          }
+        }
+      }
+    },
+    "/api/research": {
+      "post": {
+        "summary": "Execute research pipeline for confirmed target",
+        "description": "Launches the end-to-end intelligence pipeline on a confirmed target LinkedIn URL or candidate selection.",
+        "operationId": "executeResearch",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pipeline execution completed and staged at Human Gate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CandidateSearchRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Narendra Modi",
+            "description": "Full name of the prospect to search"
+          },
+          "context_keywords": {
+            "type": "string",
+            "nullable": true,
+            "example": "Prime Minister India",
+            "description": "Optional disambiguating keywords (role, company, or country)"
+          }
+        }
+      },
+      "CandidateMatch": {
+        "type": "object",
+        "required": ["full_name", "linkedin_url"],
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "type": "string",
+            "example": "Narendra Modi"
+          },
+          "headline": {
+            "type": "string",
+            "nullable": true,
+            "example": "Prime Minister of India"
+          },
+          "current_company": {
+            "type": "string",
+            "nullable": true,
+            "example": "Government of India"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true,
+            "example": "New Delhi, India"
+          },
+          "linkedin_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.linkedin.com/in/narendramodi"
+          },
+          "snippet": {
+            "type": "string",
+            "nullable": true
+          },
+          "relevance_score": {
+            "type": "number",
+            "format": "float",
+            "default": 1.0
+          }
+        }
+      },
+      "CandidateSearchResponse": {
+        "type": "object",
+        "required": ["success", "candidates_count", "candidates"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "query": {
+            "type": "string",
+            "example": "Narendra Modi Prime Minister India"
+          },
+          "candidates_count": {
+            "type": "integer",
+            "example": 2
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CandidateMatch"
+            }
+          }
+        }
+      },
+      "ResearchRequest": {
+        "type": "object",
+        "required": ["linkedin_url"],
+        "properties": {
+          "linkedin_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.linkedin.com/in/narendramodi"
+          },
+          "candidate_name": {
+            "type": "string",
+            "nullable": true,
+            "example": "Narendra Modi"
+          },
+          "candidate_headline": {
+            "type": "string",
+            "nullable": true,
+            "example": "Prime Minister of India"
+          },
+          "candidate_location": {
+            "type": "string",
+            "nullable": true,
+            "example": "India"
+          }
+        }
+      },
+      "ResearchResponse": {
+        "type": "object",
+        "required": ["success", "prospect_id", "prospect", "claims", "gaps"],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "prospect_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "prospect": {
+            "type": "object"
+          },
+          "sources_count": {
+            "type": "integer"
+          },
+          "claims": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
