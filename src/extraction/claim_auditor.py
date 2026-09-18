@@ -28,7 +28,7 @@ class ClaimAuditor:
                 other_texts.append(t)
 
         ordered_texts = relevant_texts if relevant_texts else other_texts
-        combined_text = "\n---\n".join(ordered_texts[:8])[:12000]
+        combined_text = "\n---\n".join(ordered_texts[:4])[:3500]
 
         system_prompt = (
             "You are an adversarial forensic Claim Auditor for an executive fact-checking engine. "
@@ -38,7 +38,8 @@ class ClaimAuditor:
             "2. Split multi-fact sentences into separate claims.\n"
             "3. Categorize each claim into: ROLE_TENURE, FUNDING_FINANCIAL, EDUCATION_CREDENTIAL, ACCOLADE_AWARD, GOVERNANCE_BOARD, or THOUGHT_LEADERSHIP.\n"
             "4. Return a JSON object with key 'claims', where each item has 'claim_text' and 'category'.\n"
-            "5. Do NOT include opinions or vague PR slogans."
+            "5. Do NOT include opinions or vague PR slogans.\n"
+            "6. Include assertions from both primary records and secondary/aggregator sources (e.g. reported funding amounts, acquisitions, valuations, or public directory claims) so each can undergo forensic double-check verification."
         )
 
         messages = [
@@ -46,7 +47,7 @@ class ClaimAuditor:
             {"role": "user", "content": f"Extract atomic claims for {candidate_name} from this public text:\n\n{combined_text}"}
         ]
 
-        data = self.client.chat_completion_json(messages=messages, max_tokens=3000, temperature=0.1)
+        data = self.client.chat_completion_json(messages=messages, max_tokens=800, temperature=0.1)
         extracted = data.get("claims", [])
 
         claims = []

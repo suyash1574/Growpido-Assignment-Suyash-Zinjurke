@@ -250,10 +250,15 @@ class Database:
 
         expected_prev = "GENESIS"
         for idx, r in enumerate(rows):
-            prev_h = r["prev_hash"] if "prev_hash" in r.keys() else "GENESIS"
+            prev_h = r["prev_hash"] if "prev_hash" in r.keys() else ""
             curr_h = r["event_hash"] if "event_hash" in r.keys() else ""
-            if not curr_h:
-                continue
+            if not curr_h or not prev_h:
+                return {
+                    "valid": False,
+                    "total_events": len(rows),
+                    "failed_at_index": idx,
+                    "reason": f"Broken audit integrity at event {r['event_id']}: missing cryptographic hash. Unhashed or legacy blocks are strictly prohibited."
+                }
 
             if prev_h != expected_prev:
                 return {

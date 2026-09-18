@@ -8,7 +8,7 @@ load_dotenv(ROOT_DIR / ".env")
 
 # Groq LLM Settings
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "groq")
 
 # NVIDIA Fallback Settings

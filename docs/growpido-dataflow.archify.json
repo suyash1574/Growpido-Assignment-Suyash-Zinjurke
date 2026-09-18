@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Growpido FastAPI Evidence-to-Diagnostic Data Flow",
+    "output": "docs/growpido-dataflow.html",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 650],
+    "views": [
+      { "id": "collection", "label": "Collect evidence", "focus": ["advisor", "target", "evidence", "snapshots"], "note": "Move from POST /api/research to retained source evidence." },
+      { "id": "verification", "label": "Verify facts", "focus": ["snapshots", "claims", "checks", "statuses", "refusals"], "note": "Follow claim extraction, double-checks, and fail-closed outcomes." },
+      { "id": "diagnostic", "label": "Compose diagnostic", "focus": ["statuses", "gaps", "review", "diagnostic", "audit"], "note": "Use FastAPI approval and diagnostic endpoints to deliver the executive output." }
+    ]
+  },
+  "stages": [
+    { "label": "Client" },
+    { "label": "FastAPI" },
+    { "label": "Research" },
+    { "label": "Decision" },
+    { "label": "Exports" }
+  ],
+  "nodes": [
+    { "id": "advisor", "type": "external", "label": "Advisor", "sublabel": "POST /api/research", "stage": 0, "row": 2, "tag": "request" },
+    { "id": "target", "type": "frontend", "label": "Request", "sublabel": "LinkedIn URL", "stage": 1, "row": 1, "tag": "identity" },
+    { "id": "evidence", "type": "external", "label": "Public Evidence", "sublabel": "web + registries", "stage": 1, "row": 2, "tag": "tiers 1–4" },
+    { "id": "snapshots", "type": "database", "label": "Evidence Store", "sublabel": "hash + text", "stage": 2, "row": 0, "tag": "retained" },
+    { "id": "claims", "type": "backend", "label": "Atomic Claims", "sublabel": "category + materiality", "stage": 2, "row": 1, "tag": "falsifiable" },
+    { "id": "checks", "type": "security", "label": "Verification Record", "sublabel": "primary + corroboration", "stage": 2, "row": 3, "tag": "adversarial" },
+    { "id": "statuses", "type": "backend", "label": "Claim Statuses", "sublabel": "verified / partial", "stage": 3, "row": 1, "tag": "classified" },
+    { "id": "gaps", "type": "backend", "label": "Strategic Gaps", "sublabel": "ranked top three", "stage": 3, "row": 2, "tag": "commercial" },
+    { "id": "refusals", "type": "security", "label": "Refusal Log", "sublabel": "code + rationale", "stage": 3, "row": 3, "tag": "fail closed" },
+    { "id": "review", "type": "security", "label": "Gate API", "sublabel": "approve or override", "stage": 4, "row": 0, "tag": "sign-off" },
+    { "id": "diagnostic", "type": "frontend", "label": "Export API", "sublabel": "Markdown + JSON", "stage": 4, "row": 1, "tag": "deliverable" },
+    { "id": "audit", "type": "database", "label": "Audit Ledger", "sublabel": "immutable events", "stage": 4, "row": 3, "tag": "traceability" }
+  ],
+  "flows": [
+    { "id": "url-to-target", "from": "advisor", "to": "target", "label": "POST /api/research", "classification": "input", "variant": "emphasis", "fromSide": "right", "toSide": "left" },
+    { "id": "target-to-evidence", "from": "target", "to": "evidence", "label": "orchestrator", "classification": "discovery", "variant": "default", "route": "straight", "labelDy": 24 },
+    { "id": "evidence-to-snapshots", "from": "evidence", "to": "snapshots", "label": "sanitized snapshot", "classification": "retained", "variant": "dashed", "fromSide": "right", "toSide": "left" },
+    { "id": "snapshots-to-claims", "from": "snapshots", "to": "claims", "label": "ClaimAuditor", "classification": "structured", "variant": "emphasis", "route": "straight", "labelDy": 24 },
+    { "id": "claims-to-checks", "from": "claims", "to": "checks", "label": "verify claim", "classification": "adversarial", "variant": "security", "route": "straight", "labelDy": 24 },
+    { "id": "checks-to-statuses", "from": "checks", "to": "statuses", "label": "status", "classification": "confidence + contradiction", "variant": "emphasis", "fromSide": "right", "toSide": "left", "labelDy": 76 },
+    { "id": "checks-to-refusals", "from": "checks", "to": "refusals", "label": "unsupported claim", "classification": "excluded", "variant": "security", "route": "straight", "labelDy": 28 },
+    { "id": "statuses-to-gaps", "from": "statuses", "to": "gaps", "label": "verified facts", "classification": "presence analysis", "variant": "emphasis", "route": "straight", "labelDy": 24 },
+    { "id": "statuses-to-review", "from": "statuses", "to": "review", "label": "GET prospect", "classification": "review input", "variant": "default", "fromSide": "right", "toSide": "left", "labelDx": -50 },
+    { "id": "gaps-to-review", "from": "gaps", "to": "review", "label": "ranked gaps", "classification": "recommendations", "variant": "default", "fromSide": "right", "toSide": "left", "labelDx": 50, "labelDy": 76 },
+    { "id": "refusals-to-audit", "from": "refusals", "to": "audit", "label": "refusal code", "classification": "traceability", "variant": "dashed", "fromSide": "right", "toSide": "left" },
+    { "id": "review-to-diagnostic", "from": "review", "to": "diagnostic", "label": "POST /approve", "classification": "signed off", "variant": "emphasis", "route": "straight", "labelDy": 24 },
+    { "id": "diagnostic-to-audit", "from": "diagnostic", "to": "audit", "label": "GET diagnostic/json", "classification": "traceability", "variant": "dashed", "route": "straight", "labelDy": 24 }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Growpido FastAPI Prospect-to-Diagnostic Workflow",
+    "output": "docs/growpido-workflow.html",
+    "quality_profile": "showcase",
+    "viewBox": [1151, 622],
+    "views": [
+      { "id": "happy-path", "label": "FastAPI happy path", "focus": ["ingest", "discover", "extract", "verify", "classify", "review", "publish"], "note": "Follow POST /api/research from intake to an approved diagnostic." },
+      { "id": "refusal-path", "label": "Refusal path", "focus": ["verify", "classify", "refuse", "review"], "note": "See where unsupported claims are isolated before the FastAPI review gate." },
+      { "id": "failure-path", "label": "Recovery path", "focus": ["discover", "retry", "fail"], "note": "Keep provider and verification failures visible in the API response." }
+    ]
+  },
+  "lanes": [
+    { "id": "flow", "label": "FastAPI research session" }
+  ],
+  "mainPath": ["ingest", "discover", "extract", "verify", "classify", "review", "publish"],
+  "semanticChecks": { "allowedRoots": ["ingest"], "allowedTerminals": ["publish", "refuse", "fail"], "requiredEdges": [{ "from": "verify", "to": "classify" }, { "from": "review", "to": "publish" }], "requiredPaths": [{ "from": "discover", "to": "publish" }] },
+  "nodes": [
+    { "id": "ingest", "lane": "flow", "col": 0, "type": "frontend", "label": "Research API", "sublabel": "POST /api/research", "tag": "FastAPI" },
+    { "id": "discover", "lane": "flow", "col": 1, "type": "backend", "label": "Orchestrator", "sublabel": "resolve + search" },
+    { "id": "extract", "lane": "flow", "col": 2, "type": "backend", "label": "Claim Auditor", "sublabel": "atomic claims" },
+    { "id": "verify", "lane": "flow", "col": 3, "type": "security", "label": "Double-Check", "sublabel": "two checks", "tag": "adversarial" },
+    { "id": "classify", "lane": "flow", "col": 4, "type": "security", "label": "Refusal Engine", "sublabel": "status + reason" },
+    { "id": "review", "lane": "flow", "col": 5, "type": "security", "label": "Human Gate API", "sublabel": "override + approve", "tag": "sign-off" },
+    { "id": "publish", "lane": "flow", "col": 5, "type": "frontend", "label": "Diagnostic API", "sublabel": "Markdown + JSON", "yOffset": 96 },
+    { "id": "retry", "lane": "flow", "col": 2, "type": "messagebus", "label": "Retry", "sublabel": "provider fallback", "yOffset": 170 },
+    { "id": "fail", "lane": "flow", "col": 3, "type": "security", "label": "HTTP 500", "sublabel": "visible limitation", "yOffset": 170 },
+    { "id": "refuse", "lane": "flow", "col": 4, "type": "security", "label": "Refuse Claim", "sublabel": "reason code", "tag": "fail closed", "yOffset": 170 }
+  ],
+  "edges": [
+    { "from": "ingest", "to": "discover", "label": "research request", "role": "main" },
+    { "from": "discover", "to": "extract", "label": "evidence snapshots", "role": "main" },
+    { "from": "extract", "to": "verify", "label": "claims + sources", "role": "main", "variant": "security" },
+    { "from": "verify", "to": "classify", "label": "check results", "role": "main", "variant": "security" },
+    { "from": "classify", "to": "review", "label": "prospect + gaps", "role": "main", "variant": "emphasis" },
+    { "from": "review", "to": "publish", "label": "POST /approve", "role": "main", "variant": "emphasis" },
+    { "from": "classify", "to": "refuse", "label": "unsupported", "role": "error", "variant": "security" },
+    { "from": "refuse", "to": "review", "label": "refusal log", "role": "branch", "variant": "dashed" },
+    { "from": "discover", "to": "retry", "label": "provider issue", "role": "error", "variant": "security" },
+    { "from": "retry", "to": "discover", "label": "fallback", "role": "return", "variant": "dashed" },
+    { "from": "verify", "to": "fail", "label": "contradiction or timeout", "role": "error", "variant": "security" }
+  ]
+}

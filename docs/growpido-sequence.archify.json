@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Growpido FastAPI Research Session Sequence",
+    "output": "docs/growpido-sequence.html",
+    "quality_profile": "showcase",
+    "viewBox": [1054, 680],
+    "column_fit": "spread",
+    "views": [
+      { "id": "start", "label": "Start research", "focus": ["advisor", "ui", "orchestrator"], "note": "The advisor submits a public LinkedIn URL to POST /api/research." },
+      { "id": "verify", "label": "Verify claims", "focus": ["orchestrator", "discovery", "verifier", "classifier"], "note": "Discovery and extraction feed an independent double-check loop." },
+      { "id": "review", "label": "Review and publish", "focus": ["classifier", "gate", "renderer", "store"], "note": "FastAPI approval precedes Markdown or JSON diagnostic export." }
+    ]
+  },
+  "participants": [
+    { "id": "advisor", "type": "external", "label": "Advisor", "sublabel": "requester" },
+    { "id": "ui", "type": "frontend", "label": "FastAPI API", "sublabel": ":8000" },
+    { "id": "orchestrator", "type": "backend", "label": "Orchestrator", "sublabel": "controller" },
+    { "id": "discovery", "type": "backend", "label": "Discovery", "sublabel": "public sources" },
+    { "id": "verifier", "type": "security", "label": "Verifier", "sublabel": "double-check" },
+    { "id": "classifier", "type": "backend", "label": "Classifier", "sublabel": "status hub" },
+    { "id": "gate", "type": "security", "label": "Gate API", "sublabel": "override + approve" },
+    { "id": "renderer", "type": "frontend", "label": "Export API", "sublabel": "Markdown + JSON" },
+    { "id": "store", "type": "database", "label": "Audit DB", "sublabel": "traceability" }
+  ],
+  "segments": [
+    { "from": 150, "to": 250, "label": "Accept request" },
+    { "from": 268, "to": 440, "label": "Discover and verify" },
+    { "from": 458, "to": 620, "label": "Review and publish" }
+  ],
+  "messages": [
+    { "from": "advisor", "to": "ui", "y": 180, "label": "POST /api/research", "variant": "emphasis" },
+    { "from": "ui", "to": "orchestrator", "y": 220, "label": "execute_research(url)", "variant": "emphasis" },
+    { "from": "orchestrator", "to": "discovery", "y": 260, "label": "resolve + search", "variant": "emphasis" },
+    { "from": "discovery", "to": "verifier", "y": 300, "label": "evidence + claims", "variant": "security" },
+    { "from": "verifier", "to": "discovery", "y": 340, "label": "corroborate", "variant": "security" },
+    { "from": "discovery", "to": "verifier", "y": 380, "label": "candidate evidence", "variant": "return" },
+    { "from": "verifier", "to": "classifier", "y": 420, "label": "check results", "variant": "security" },
+    { "from": "classifier", "to": "gate", "y": 460, "label": "prospect + gaps", "variant": "emphasis" },
+    { "from": "gate", "to": "renderer", "y": 500, "label": "POST /approve", "variant": "emphasis" },
+    { "from": "renderer", "to": "store", "y": 540, "label": "GET diagnostic/json", "variant": "dashed" },
+    { "from": "renderer", "to": "ui", "y": 580, "label": "file response", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "ui", "from": 214, "to": 236, "type": "frontend" },
+    { "participant": "orchestrator", "from": 214, "to": 266, "type": "backend" },
+    { "participant": "discovery", "from": 254, "to": 392, "type": "backend" },
+    { "participant": "verifier", "from": 294, "to": 432, "type": "security" },
+    { "participant": "classifier", "from": 414, "to": 472, "type": "backend" },
+    { "participant": "gate", "from": 454, "to": 512, "type": "security" },
+    { "participant": "renderer", "from": 494, "to": 592, "type": "frontend" },
+    { "participant": "store", "from": 534, "to": 552, "type": "database" }
+  ]
+}

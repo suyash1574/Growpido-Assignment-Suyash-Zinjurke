@@ -869,7 +869,7 @@
         const badge = c.status === 'VERIFIED' ? 
           `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-400">VERIFIED</span>` :
           (c.status === 'PARTIALLY_VERIFIED' ?
-          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500/20 text-amber-400">PARTIAL</span>` :
+          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500/20 text-amber-400">PARTIALLY_VERIFIED</span>` :
           `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-400">QUARANTINED</span>`);
 
         const src = c.primary_source_url ? `<a href="${c.primary_source_url}" target="_blank" class="text-indigo-400 hover:underline">${c.primary_source_url.slice(0, 30)}...</a>` : 'Corporate Press';

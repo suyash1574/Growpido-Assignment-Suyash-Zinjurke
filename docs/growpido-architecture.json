@@ -1,0 +1,423 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Growpido FastAPI Intelligence Engine Architecture",
+    "repository": {
+      "url": "https://github.com/suyash1574/Growpido-Assignment-Suyash-Zinjurke",
+      "provider": "github",
+      "link_mode": "local-only",
+      "revision": "adadc1a3c089391987938a3ac5de466d743e1cfa"
+    },
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "ingest-and-discovery",
+        "label": "Ingestion and Discovery",
+        "focus": [
+          "advisor",
+          "ui",
+          "orchestrator",
+          "discovery",
+          "search_apis"
+        ],
+        "note": "Advisor sends a LinkedIn URL to FastAPI; the orchestrator resolves the target and discovers public evidence."
+      },
+      {
+        "id": "adversarial-audit",
+        "label": "Adversarial Verification",
+        "focus": [
+          "auditor",
+          "llm",
+          "verifier",
+          "refusal",
+          "db"
+        ],
+        "note": "Claim Auditor isolates atomic claims; verification applies primary-source and corroboration checks before classification."
+      },
+      {
+        "id": "human-gate-diagnostic",
+        "label": "Human Gate and Diagnostic",
+        "focus": [
+          "verifier",
+          "humangate",
+          "diagnostic",
+          "ui"
+        ],
+        "note": "FastAPI exposes the human override and approval gate before Markdown or JSON diagnostics are exported."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "advisor",
+      "type": "external",
+      "label": "Advisor / Analyst",
+      "sublabel": "Executive Ingestion",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "FastAPI Server",
+      "sublabel": ":8000 + dashboard",
+      "sources": [
+        {
+          "path": "src/server.py"
+        },
+        {
+          "path": "src/templates/index.html"
+        }
+      ],
+      "pos": [
+        260,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "orchestrator",
+      "type": "backend",
+      "label": "Orchestrator",
+      "sublabel": "Pipeline Controller",
+      "brand": "python",
+      "sources": [
+        {
+          "path": "src/orchestrator.py"
+        }
+      ],
+      "pos": [
+        480,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "SQLite Store",
+      "sublabel": "Audit Trail",
+      "brand": "sqlite",
+      "sources": [
+        {
+          "path": "src/storage/db.py"
+        }
+      ],
+      "pos": [
+        480,
+        130
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "discovery",
+      "type": "backend",
+      "label": "Discovery Agent",
+      "sublabel": "OSINT Collector",
+      "sources": [
+        {
+          "path": "src/discovery/search_client.py"
+        },
+        {
+          "path": "src/discovery/web_fetcher.py"
+        }
+      ],
+      "pos": [
+        700,
+        130
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "search_apis",
+      "type": "external",
+      "label": "Public Registries",
+      "sublabel": "Tavily / ADGM",
+      "pos": [
+        920,
+        130
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "auditor",
+      "type": "backend",
+      "label": "Claim Auditor",
+      "sublabel": "Atomic Extraction",
+      "sources": [
+        {
+          "path": "src/extraction/claim_auditor.py"
+        }
+      ],
+      "pos": [
+        700,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "cloud",
+      "label": "Foundation LLM",
+      "sublabel": "Adversarial Reasoning",
+      "brand": "openai",
+      "pos": [
+        920,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "refusal",
+      "type": "backend",
+      "label": "Refusal Engine",
+      "sublabel": "REF-01 to REF-04",
+      "sources": [
+        {
+          "path": "src/verification/refusal_engine.py"
+        }
+      ],
+      "pos": [
+        480,
+        470
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "verifier",
+      "type": "security",
+      "label": "Verification Engine",
+      "sublabel": "Double-Check Logic",
+      "sources": [
+        {
+          "path": "src/verification/double_checker.py"
+        },
+        {
+          "path": "src/verification/contradiction.py"
+        }
+      ],
+      "pos": [
+        700,
+        470
+      ],
+      "size": [
+        140,
+        64
+      ],
+      "tag": "Adversarial Triad"
+    },
+    {
+      "id": "humangate",
+      "type": "security",
+      "label": "Human Gate API",
+      "sublabel": "override + approve",
+      "sources": [
+        {
+          "path": "src/server.py"
+        }
+      ],
+      "pos": [
+        920,
+        470
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "Zero-Trust"
+    },
+    {
+      "id": "diagnostic",
+      "type": "backend",
+      "label": "Diagnostic API",
+      "sublabel": "Markdown + JSON",
+      "sources": [
+        {
+          "path": "src/diagnosis/diagnostic_renderer.py"
+        },
+        {
+          "path": "src/diagnosis/export.py"
+        }
+      ],
+      "pos": [
+        1140,
+        470
+      ],
+      "size": [
+        140,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Growpido Intelligence Engine (Local Runtime)",
+      "wraps": [
+        "orchestrator",
+        "discovery",
+        "auditor",
+        "verifier",
+        "refusal",
+        "humangate",
+        "diagnostic",
+        "db"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "advisor-ui",
+      "from": "advisor",
+      "to": "ui",
+      "label": "HTTP request",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ui-orchestrator",
+      "from": "ui",
+      "to": "orchestrator",
+      "label": "POST /api/research",
+      "labelDy": 54
+    },
+    {
+      "id": "orchestrator-db",
+      "from": "orchestrator",
+      "to": "db",
+      "label": "prospect + sources",
+      "labelDy": -35,
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "orchestrator-discovery",
+      "from": "orchestrator",
+      "to": "discovery",
+      "label": "execute_research(url)",
+      "fromSide": "top",
+      "toSide": "left"
+    },
+    {
+      "id": "discovery-search",
+      "from": "discovery",
+      "to": "search_apis",
+      "label": "public search + fetch",
+      "labelDy": 54,
+      "variant": "emphasis"
+    },
+    {
+      "id": "discovery-auditor",
+      "from": "discovery",
+      "to": "auditor",
+      "label": "snapshots → claims",
+      "labelDy": 24,
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "orchestrator-auditor",
+      "from": "orchestrator",
+      "to": "auditor",
+      "label": "ClaimAuditor"
+    },
+    {
+      "id": "auditor-llm",
+      "from": "auditor",
+      "to": "llm",
+      "label": "structured reasoning",
+      "labelDy": 54
+    },
+    {
+      "id": "auditor-verifier",
+      "from": "auditor",
+      "to": "verifier",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "verifier-refusal",
+      "from": "verifier",
+      "to": "refusal",
+      "label": "UNVERIFIED / refused",
+      "labelDy": 52,
+      "variant": "dashed"
+    },
+    {
+      "id": "verifier-humangate",
+      "from": "verifier",
+      "to": "humangate",
+      "label": "VERIFIED / review",
+      "labelDy": 52,
+      "variant": "emphasis"
+    },
+    {
+      "id": "humangate-diagnostic",
+      "from": "humangate",
+      "to": "diagnostic",
+      "label": "POST /approve → export",
+      "labelDy": 54
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Ingestion and Discovery",
+      "items": [
+        "Advisor submits a public LinkedIn URL through FastAPI POST /api/research",
+        "Discovery Agent queries public web sources and stores evidence snapshots",
+        "Raw snapshots are hashed and stored for provenance tracking"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Adversarial Verification",
+      "items": [
+        "Claim Auditor decomposes text into discrete, falsifiable atomic claims",
+        "Verification Engine independently corroborates each claim against primary sources",
+        "Unverified or contradictory claims are systematically routed to Refusal Engine"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Human Gate and Delivery",
+      "items": [
+        "Advisors review 3 strategic presence gaps with full audit receipts",
+        "FastAPI exposes claim override and prospect approval endpoints",
+        "Diagnostic API returns Markdown and JSON exports with the audit trail"
+      ]
+    }
+  ]
+}

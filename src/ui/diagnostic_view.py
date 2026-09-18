@@ -33,7 +33,7 @@ class DiagnosticView:
                 if c.primary_source_url:
                     st.caption(f"↳ Anchor: [{c.primary_source_url}]({c.primary_source_url})")
             elif c.status == ClaimStatus.PARTIALLY_VERIFIED:
-                st.markdown(f"- ⚠️ **`PARTIALLY VERIFIED`** [{c.category.value}]: {c.claim_text}")
+                st.markdown(f"- ⚠️ **`PARTIALLY_VERIFIED`** [{c.category.value}]: {c.claim_text}")
                 st.caption(f"↳ Reason: {c.contradiction_details or 'Minor date or title variance across sources'}")
 
         st.markdown("---")

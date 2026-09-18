@@ -7,8 +7,9 @@ TIER_1_SPECIFIC_DOMAINS = [
     # Sovereign / State Portals
     "u.ae", "sansad.in", "parliament.uk", "whitehouse.gov", "pmindia.gov.in", "india.gov.in",
     "adgm.com", "difc.ae", "dfsa.ae", "moec.gov.ae", "sec.gov", "mca.gov.in", "companieshouse.gov.uk",
+    "mediaoffice.ae",
     # Corporate primary domains / investor relations
-    "press.aboutamazon.com", "aboutamazon.com", "amazon.ae", "souq.com", "ir.aboutamazon.com"
+    "press.aboutamazon.com", "aboutamazon.com", "aboutamazon.me", "amazon.com", "amazon.ae", "souq.com", "ir.aboutamazon.com"
 ]
 
 # Tier 2 Whitelist Patterns: Reputable Business, Financial, and National News Media
@@ -17,7 +18,9 @@ TIER_2_PATTERNS = [
     "thehindu.com", "indiatimes.com", "economictimes.com", "hindustantimes.com",
     "indianexpress.com", "ndtv.com", "forbesmiddleeast.com", "forbes.com",
     "thenationalnews.com", "gulfnews.com", "arabianbusiness.com", "wam.ae",
-    "zawya.com", "khaleejtimes.com"
+    "zawya.com", "khaleejtimes.com", "gulfbusiness.com", "entrepreneur.com",
+    "arabnews.com", "businessoffashion.com", "aljazeera.com", "meed.com",
+    "fastcompany.com", "techcrunch.com", "inc.com"
 ]
 
 # Tier 3 Aggregator Patterns: Directories & Wikilinks (Discovery only, never primary verification)

@@ -31,7 +31,11 @@ class DiagnosticRenderer:
         md.append(f"**Fact Verification Standard**: Double-Checked against Tier-1 Primary Registers (Sovereign Portals, Government Registries, Official Corporate Disclosures)")
         md.append("\n---\n")
 
-        # 1. Executive Fact Dossier (Strictly bounded to top 5 highest-materiality verified claims for one-page briefing budget)
+        def _truncate(text: str, max_len: int) -> str:
+            clean = " ".join((text or "").strip().split())
+            return clean if len(clean) <= max_len else clean[:max_len - 3] + "..."
+
+        # 1. Executive Fact Dossier (Strictly bounded to top 5 highest-materiality verified claims and 140 char text for one-page briefing budget)
         md.append("## 1. Verified Executive Fact Dossier")
         md.append("| Status | Category | Factual Assertion | Primary Source Citation | Double-Check Corroboration |")
         md.append("| :---: | :---: | :--- | :--- | :--- |")
@@ -44,24 +48,28 @@ class DiagnosticRenderer:
         display_verified = sorted_verified[:5]
 
         for c in display_verified:
-            status_label = "`VERIFIED`" if c.status == ClaimStatus.VERIFIED else "`PARTIAL`"
+            status_label = "`VERIFIED`" if c.status == ClaimStatus.VERIFIED else "`PARTIALLY_VERIFIED`"
             src_link = f"[{c.primary_source_url[:35]}...]({c.primary_source_url})" if c.primary_source_url else "Primary Domain"
             corrob = f"[{c.secondary_source_url[:30]}...]({c.secondary_source_url})" if c.secondary_source_url else "Confirmed"
-            md.append(f"| {status_label} | {c.category.value} | {c.claim_text} | {src_link} | {corrob} |")
+            bounded_text = _truncate(c.claim_text, 140)
+            md.append(f"| {status_label} | {c.category.value} | {bounded_text} | {src_link} | {corrob} |")
 
         if len(sorted_verified) > 5:
             md.append(f"\n*Note: Top 5 material assertions displayed for one-page executive brevity. All {len(sorted_verified)} verified claims are immutably preserved in the cryptographic audit trail.*")
 
         md.append("\n---\n")
 
-        # 2. Three Strategic Presence Gaps (Bounded word count for one-page brevity)
+        # 2. Three Strategic Presence Gaps (Bounded text length for one-page brevity)
         md.append("## 2. Three Biggest Strategic Presence Gaps")
         for g in gaps[:3]:
             dim_title = g.dimension.value.replace("_", " ").title()
+            obs = _truncate(g.observation, 160)
+            impact = _truncate(g.strategic_impact, 140)
+            recom = _truncate(g.recommendation, 140)
             md.append(f"### Gap #{g.rank}: {g.title} ({dim_title})")
-            md.append(f"- **Observation**: {g.observation.strip()}")
-            md.append(f"- **Strategic Commercial Impact**: {g.strategic_impact.strip()}")
-            md.append(f"- **Growpido Advisory Recommendation**: {g.recommendation.strip()}\n")
+            md.append(f"- **Observation**: {obs}")
+            md.append(f"- **Strategic Commercial Impact**: {impact}")
+            md.append(f"- **Growpido Advisory Recommendation**: {recom}\n")
 
         md.append("---\n")
 
@@ -69,9 +77,11 @@ class DiagnosticRenderer:
         md.append("## 3. Adversarial Refusal Demonstration (Track B Mandate)")
         if refused_claims:
             for idx, refused in enumerate(refused_claims[:2], 1):
-                md.append(f"> **Quarantined Claim #{idx}**: *\"{refused.claim_text}\"*")
+                r_text = _truncate(refused.claim_text, 140)
+                r_reason = _truncate(refused.refusal_reason or 'Excluded pursuant to Rule BR-R01 (Accuracy Dominance): Unsubstantiated by Tier-1 primary records.', 180)
+                md.append(f"> **Quarantined Claim #{idx}**: *\"{r_text}\"*")
                 md.append(f"> \n> **Refusal Code**: `{refused.refusal_code or 'REF-01'}`")
-                md.append(f"> \n> **Causal Rationale**: {refused.refusal_reason or 'Excluded pursuant to Rule BR-R01 (Accuracy Dominance): Unsubstantiated by Tier-1 primary records or contested by independent sources.'}\n")
+                md.append(f"> \n> **Causal Rationale**: {r_reason}\n")
         else:
             # Explicit warning if somehow zero claims were quarantined
             md.append(

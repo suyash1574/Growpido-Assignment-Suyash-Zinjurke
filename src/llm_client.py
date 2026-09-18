@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 import re
@@ -31,6 +32,8 @@ class UnifiedLLMClient:
     - Fallback: NVIDIA Integrate API (nvidia/nemotron-3.5-lightning-30b-a3b)
     """
 
+    _groq_circuit_open: bool = False
+
     def __init__(
         self,
         groq_api_key: Optional[str] = None,
@@ -40,17 +43,50 @@ class UnifiedLLMClient:
     ):
         self.groq_api_key = groq_api_key or GROQ_API_KEY
         self.groq_model = groq_model or GROQ_MODEL
-        self.groq_client = Groq(api_key=self.groq_api_key) if self.groq_api_key else None
+        self.groq_client = (
+            Groq(api_key=self.groq_api_key, max_retries=0, timeout=5.0)
+            if self.groq_api_key
+            else None
+        )
 
         self.nvidia_api_key = nvidia_api_key or NVIDIA_API_KEY
         self.nvidia_model = nvidia_model or NVIDIA_MODEL
         self.nvidia_client = (
-            OpenAI(base_url=NVIDIA_BASE_URL, api_key=self.nvidia_api_key, timeout=60.0)
+            OpenAI(base_url=NVIDIA_BASE_URL, api_key=self.nvidia_api_key, max_retries=1, timeout=30.0)
             if self.nvidia_api_key
             else None
         )
 
+        self.provider = (os.getenv("LLM_PROVIDER", "groq") or "groq").lower()
+
+    def _call_groq(self, messages: List[Dict[str, str]], max_tokens: int, temperature: float, json_mode: bool) -> str:
+        kwargs: Dict[str, Any] = {
+            "model": self.groq_model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+        if json_mode:
+            kwargs["response_format"] = {"type": "json_object"}
+
+        response = self.groq_client.chat.completions.create(**kwargs)
+        content = response.choices[0].message.content or ""
         self.last_provider_used = "groq"
+        return content.strip()
+
+    def _call_nvidia(self, messages: List[Dict[str, str]], max_tokens: int, temperature: float) -> str:
+        extra_body = {"chat_template_kwargs": {"enable_thinking": False}}
+        nv_kwargs: Dict[str, Any] = {
+            "model": self.nvidia_model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "extra_body": extra_body,
+        }
+        response = self.nvidia_client.chat.completions.create(**nv_kwargs)
+        content = response.choices[0].message.content or ""
+        self.last_provider_used = "nvidia"
+        return content.strip()
 
     def chat_completion(
         self,
@@ -60,46 +96,51 @@ class UnifiedLLMClient:
         json_mode: bool = False,
     ) -> str:
         """
-        Executes chat completion with automatic Groq -> NVIDIA failover on any rate limit or API error.
+        Executes chat completion with bi-directional Groq <-> NVIDIA failover respecting LLM_PROVIDER.
         """
-        # 1. Attempt Groq Primary
-        if self.groq_client:
+        prepared_messages = list(messages)
+        if json_mode:
+            has_system = any(m.get("role") == "system" for m in prepared_messages)
+            if not has_system:
+                prepared_messages.insert(0, {"role": "system", "content": "You are a JSON-only API. You must strictly respond with a valid JSON object."})
+            elif not any("json" in m.get("content", "").lower() for m in prepared_messages if m.get("role") == "system"):
+                orig_sys = prepared_messages[0]["content"]
+                prepared_messages[0] = {"role": "system", "content": f"{orig_sys}\nYou must strictly respond with a valid JSON object."}
+
+        # If NVIDIA is configured as primary
+        if self.provider == "nvidia" and self.nvidia_client:
             try:
-                kwargs: Dict[str, Any] = {
-                    "model": self.groq_model,
-                    "messages": messages,
-                    "temperature": temperature,
-                    "max_tokens": max_tokens,
-                }
-                if json_mode:
-                    kwargs["response_format"] = {"type": "json_object"}
+                return self._call_nvidia(prepared_messages, max_tokens, temperature)
+            except Exception as nv_err:
+                logger.warning(f"[LLM Failover] Primary NVIDIA call failed: {nv_err}. Failing over to Groq...")
+                if self.groq_client and not UnifiedLLMClient._groq_circuit_open:
+                    try:
+                        return self._call_groq(prepared_messages, max_tokens, temperature, json_mode)
+                    except Exception as g_err:
+                        raise RuntimeError(f"Both NVIDIA and Groq providers failed. Groq error: {g_err}")
+                raise RuntimeError(f"NVIDIA failed and Groq unavailable: {nv_err}")
 
-                response = self.groq_client.chat.completions.create(**kwargs)
-                content = response.choices[0].message.content or ""
-                self.last_provider_used = "groq"
-                return content.strip()
-
+        # Default: Attempt Groq Primary
+        if self.groq_client and not UnifiedLLMClient._groq_circuit_open:
+            try:
+                return self._call_groq(prepared_messages, max_tokens, temperature, json_mode)
             except Exception as e:
-                logger.warning(
-                    f"[LLM Failover] Groq call failed with {type(e).__name__}: {e}. "
-                    f"Failing over to NVIDIA ({self.nvidia_model})..."
-                )
+                err_msg = str(e).lower()
+                if "rate limit" in err_msg or "429" in err_msg or "tokens per day" in err_msg or "quota" in err_msg:
+                    UnifiedLLMClient._groq_circuit_open = True
+                    logger.warning(
+                        f"[LLM Circuit Breaker] Groq quota/rate limit reached. Opening circuit, routing all subsequent requests to NVIDIA."
+                    )
+                else:
+                    logger.warning(
+                        f"[LLM Failover] Groq call failed with {type(e).__name__}: {e}. "
+                        f"Failing over to NVIDIA ({self.nvidia_model})..."
+                    )
 
-        # 2. Fallback to NVIDIA API (Lightning fast ~1.1s with enable_thinking=False)
+        # Fallback to NVIDIA API
         if self.nvidia_client:
             try:
-                extra_body = {"chat_template_kwargs": {"enable_thinking": False}}
-                nv_kwargs: Dict[str, Any] = {
-                    "model": self.nvidia_model,
-                    "messages": messages,
-                    "temperature": temperature,
-                    "max_tokens": max_tokens,
-                    "extra_body": extra_body,
-                }
-                response = self.nvidia_client.chat.completions.create(**nv_kwargs)
-                content = response.choices[0].message.content or ""
-                self.last_provider_used = "nvidia"
-                return content.strip()
+                return self._call_nvidia(prepared_messages, max_tokens, temperature)
             except Exception as nv_err:
                 logger.error(f"[LLM Failover] NVIDIA fallback call also failed: {nv_err}")
                 raise RuntimeError(

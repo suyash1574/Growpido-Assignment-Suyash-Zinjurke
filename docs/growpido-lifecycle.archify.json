@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Growpido FastAPI Research Session Lifecycle",
+    "output": "docs/growpido-lifecycle.html",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 650],
+    "views": [
+      { "id": "progression", "label": "Session progression", "focus": ["initialized", "discovering", "extracting", "verifying", "review", "completed"], "note": "Follow POST /api/research from URL intake to delivered diagnostic." },
+      { "id": "refusal", "label": "Refusal outcome", "focus": ["verifying", "refused"], "note": "Unsupported claims are explicit FastAPI pipeline outcomes rather than silent inclusions." }
+    ]
+  },
+  "lanes": [
+    { "id": "main", "label": "FastAPI research session" },
+    { "id": "terminal", "label": "Terminal outcomes" }
+  ],
+  "states": [
+    { "id": "initialized", "type": "start", "label": "Research Accepted", "sublabel": "POST /api/research", "tag": "01", "lane": "main", "col": 0, "step": "01" },
+    { "id": "discovering", "type": "active", "label": "Orchestrating", "sublabel": "search + fetch", "tag": "02", "lane": "main", "col": 1, "step": "02" },
+    { "id": "extracting", "type": "active", "label": "Claims Persisted", "sublabel": "atomic claims", "tag": "03", "lane": "main", "col": 2, "step": "03" },
+    { "id": "verifying", "type": "decision", "label": "Double-Check", "sublabel": "primary + corroboration", "tag": "04", "lane": "main", "col": 3, "step": "04" },
+    { "id": "review", "type": "waiting", "label": "Awaiting Review", "sublabel": "GET prospect", "tag": "05", "lane": "main", "col": 4, "step": "05" },
+    { "id": "completed", "type": "success", "label": "Diagnostic Exported", "sublabel": "Markdown / JSON", "tag": "06", "lane": "terminal", "col": 2, "step": "06" },
+    { "id": "refused", "type": "failure", "label": "Claim Refused", "sublabel": "UNVERIFIED + reason", "tag": "branch", "lane": "terminal", "col": 1 }
+  ],
+  "transitions": [
+    { "from": "initialized", "to": "discovering", "label": "request accepted", "variant": "emphasis", "labelDy": 55 },
+    { "from": "discovering", "to": "extracting", "label": "sources indexed", "variant": "emphasis", "labelDy": -28 },
+    { "from": "extracting", "to": "verifying", "label": "claims extracted", "variant": "security", "labelDy": -28 },
+    { "from": "verifying", "to": "review", "label": "awaiting review", "variant": "emphasis", "labelDy": -28 },
+    { "from": "review", "to": "completed", "label": "POST /approve", "variant": "emphasis", "route": "straight", "fromSide": "bottom", "toSide": "top", "labelDy": 24 },
+    { "from": "verifying", "to": "refused", "label": "refusal code", "variant": "security", "route": "straight", "fromSide": "bottom", "toSide": "top", "labelDy": 24 }
+  ]
+}

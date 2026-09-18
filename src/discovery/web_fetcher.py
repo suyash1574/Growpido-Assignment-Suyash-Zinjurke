@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any
 from bs4 import BeautifulSoup
 
 class WebFetcher:
-    def __init__(self, timeout_seconds: float = 15.0, user_agent: str = "Growpido-Intelligence-Engine/1.0 (OSINT Research; Passive-Index)"):
+    def __init__(self, timeout_seconds: float = 6.0, user_agent: str = "Growpido-Intelligence-Engine/1.0 (OSINT Research; Passive-Index)"):
         self.timeout = timeout_seconds
         self.headers = {
             "User-Agent": user_agent,
