@@ -72,6 +72,8 @@ class UnifiedLLMClient:
         response = self.groq_client.chat.completions.create(**kwargs)
         content = response.choices[0].message.content or ""
         self.last_provider_used = "groq"
+        if not content.strip():
+            logger.error(f"[Groq Empty Response] Response object: {response}")
         return content.strip()
 
     def _call_nvidia(self, messages: List[Dict[str, str]], max_tokens: int, temperature: float) -> str:
@@ -86,6 +88,8 @@ class UnifiedLLMClient:
         response = self.nvidia_client.chat.completions.create(**nv_kwargs)
         content = response.choices[0].message.content or ""
         self.last_provider_used = "nvidia"
+        if not content.strip():
+            logger.error(f"[NVIDIA Empty Response] Response object: {response}")
         return content.strip()
 
     def chat_completion(
@@ -196,7 +200,8 @@ class UnifiedLLMClient:
                 claim_matches = re.findall(r'\{\s*"claim_text":\s*"([^"]+)",\s*"category":\s*"([^"]+)"\s*\}', cleaned)
                 if claim_matches:
                     return {"claims": [{"claim_text": m[0], "category": m[1]} for m in claim_matches]}
-            raise
+            logger.error(f"[LLM JSON Error] Could not decode JSON. Raw string: {repr(raw)}")
+            return {}
 
 # Global singleton client instance
 llm_client = UnifiedLLMClient()

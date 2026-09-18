@@ -80,11 +80,24 @@ class ContradictionDetector:
                 max_tokens=300,
                 temperature=0.0
             )
+            corroborated = result.get("corroborated", False)
+            corroborating_url = result.get("corroborating_url")
+            details = result.get("contradiction_details")
+            
+            import urllib.parse
+            if corroborated and corroborating_url and primary_source and primary_source.url:
+                primary_domain = urllib.parse.urlparse(primary_source.url).netloc.lower().replace("www.", "")
+                corr_domain = urllib.parse.urlparse(corroborating_url).netloc.lower().replace("www.", "")
+                if primary_domain == corr_domain:
+                    corroborated = False
+                    corroborating_url = None
+                    details = "Corroboration rejected: must be an independent domain."
+
             return {
-                "corroborated": result.get("corroborated", False),
-                "corroborating_url": result.get("corroborating_url"),
+                "corroborated": corroborated,
+                "corroborating_url": corroborating_url,
                 "contradiction_detected": result.get("contradiction_detected", False),
-                "details": result.get("contradiction_details")
+                "details": details
             }
         except Exception as e:
             return {
@@ -150,20 +163,34 @@ class ContradictionDetector:
         try:
             resp = self.client.chat_completion_json(
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=600,
+                max_tokens=2000,
                 temperature=0.0
             )
             evals = resp.get("evaluations", [])
             eval_map = {e.get("claim_index"): e for e in evals if "claim_index" in e}
 
+            import urllib.parse
             for idx, c in enumerate(claims, 1):
                 ev = eval_map.get(idx)
                 if ev:
+                    corroborated = ev.get("corroborated", False)
+                    corroborating_url = ev.get("corroborating_url")
+                    details = ev.get("contradiction_details")
+                    
+                    # Programmatically enforce cross-domain corroboration
+                    if corroborated and corroborating_url and c.primary_source_url:
+                        primary_domain = urllib.parse.urlparse(c.primary_source_url).netloc.lower().replace("www.", "")
+                        corr_domain = urllib.parse.urlparse(corroborating_url).netloc.lower().replace("www.", "")
+                        if primary_domain == corr_domain:
+                            corroborated = False
+                            corroborating_url = None
+                            details = "Corroboration rejected: must be an independent domain."
+
                     results[c.claim_id] = {
-                        "corroborated": ev.get("corroborated", False),
-                        "corroborating_url": ev.get("corroborating_url"),
+                        "corroborated": corroborated,
+                        "corroborating_url": corroborating_url,
                         "contradiction_detected": ev.get("contradiction_detected", False),
-                        "details": ev.get("contradiction_details")
+                        "details": details
                     }
                 else:
                     results[c.claim_id] = {

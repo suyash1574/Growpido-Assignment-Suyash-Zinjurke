@@ -1,6 +1,6 @@
 import json
 from uuid import UUID
-from typing import List, Optional
+from typing import List, Optional, Any
 from src.llm_client import llm_client, UnifiedLLMClient
 from src.storage.models import StrategicGap, GapDimension, Claim, ClaimStatus
 
@@ -17,7 +17,8 @@ class GapSynthesizer:
         candidate_name: str,
         verified_claims: List[Claim],
         location_country: str = "UAE",
-        sector: str = "Executive Leadership"
+        sector: str = "Executive Leadership",
+        evidence_sources: List[Any] = None
     ) -> List[StrategicGap]:
         """
         Synthesizes exactly three prioritized strategic presence gaps comparing verified facts
@@ -63,15 +64,21 @@ class GapSynthesizer:
         if not self.client:
             return default_gaps
 
+        channels_found = []
+        if evidence_sources:
+            channels_found = list(set([s.domain for s in evidence_sources if s.domain]))
+        channel_context = f"Measured Channel Footprint: {', '.join(channels_found) if channels_found else 'None detected'}"
+
         prompt = (
             f"You are Growpido's Principal Executive Branding Strategist.\n"
             f"Analyze the verified achievements of {location_country} {sector} leader: {candidate_name}.\n\n"
             f"Verified Facts:\n{facts_summary}\n\n"
             f"Operating Jurisdiction: {location_country}\n"
-            f"Primary Sector: {sector}\n\n"
+            f"Primary Sector: {sector}\n"
+            f"{channel_context}\n\n"
             "STRICT EVIDENCE GROUNDING RULES:\n"
-            "1. Base observations strictly on the provided verified facts and public record.\n"
-            "2. DO NOT invent or speculate about absent channels (e.g. do NOT claim absence of podcasts, panels, or videos without explicit evidence).\n"
+            "1. Base observations strictly on the provided verified facts and the Measured Channel Footprint.\n"
+            "2. DO NOT invent or speculate about absent channels. Compare the 'Measured Channel Footprint' to what a top executive should have.\n"
             "3. Frame observations around documented authority indexing, narrative clarity, and institutional syndication.\n"
             "4. ONE-PAGE BREVITY: Keep observation, strategic_impact, and recommendation strictly under 140 characters each so the entire diagnostic fits on a single page.\n\n"
             "Synthesize exactly THREE strategic presence gaps explaining how this executive underrepresents their market authority:\n"
@@ -90,7 +97,7 @@ class GapSynthesizer:
         try:
             data = self.client.chat_completion_json(
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=800,
+                max_tokens=1500,
                 temperature=0.2
             )
             items = data.get("gaps", [])

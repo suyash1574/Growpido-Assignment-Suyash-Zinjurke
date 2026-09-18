@@ -128,7 +128,7 @@ class DoubleChecker:
         try:
             resp = self.client.chat_completion_json(
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=500,
+                max_tokens=2000,
                 temperature=0.0
             )
             evals = resp.get("evaluations", [])

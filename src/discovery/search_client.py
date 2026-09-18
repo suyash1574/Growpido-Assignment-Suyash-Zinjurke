@@ -24,7 +24,7 @@ class SearchClient:
         # Attempt Tavily if API key is provided
         if self.api_key:
             try:
-                async with httpx.AsyncClient(timeout=25.0) as client:
+                async with httpx.AsyncClient(timeout=8.0) as client:
                     payload = {
                         "api_key": self.api_key,
                         "query": query,
@@ -55,7 +55,7 @@ class SearchClient:
 
     async def _duckduckgo_live_search(self, query: str, max_results: int = 5) -> List[Dict[str, str]]:
         url = f"https://html.duckduckgo.com/html/?q={urllib.parse.quote_plus(query)}"
-        async with httpx.AsyncClient(timeout=12.0, headers=self.headers, follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=5.0, headers=self.headers, follow_redirects=True) as client:
             resp = await client.get(url)
             if resp.status_code != 200:
                 raise RuntimeError(f"HTTP {resp.status_code} returned by live search gateway.")
