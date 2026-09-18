@@ -50,7 +50,7 @@ class ResearchRequest(BaseModel):
     candidate_location: Optional[str] = None
     candidate_company: Optional[str] = None
     candidate_role: Optional[str] = None
-    enforce_track_b: Optional[bool] = False
+    enforce_track_b: Optional[bool] = True
 
 class ClaimOverrideRequest(BaseModel):
     status: str

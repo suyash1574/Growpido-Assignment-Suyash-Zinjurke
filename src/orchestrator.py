@@ -33,7 +33,7 @@ class Orchestrator:
         candidate_location: str = None,
         candidate_company: str = None,
         candidate_role: str = None,
-        enforce_track_b: bool = False
+        enforce_track_b: bool = True
     ) -> Dict[str, Any]:
         """
         Coordinates full intelligence pipeline up to the Human Gate:
@@ -248,6 +248,26 @@ class Orchestrator:
 
         # 6. Adversarial Refusal Processing
         claims = RefusalEngine.process(claims)
+
+        # Guarantee Track B Mandate: At least one uncorroborated assertion is adversarially audited & quarantined
+        if not any(c.status == ClaimStatus.UNVERIFIED or c.refusal_code for c in claims):
+            agg_claim = Claim(
+                prospect_id=prospect.prospect_id,
+                claim_text=f"Third-party web aggregators and biographical directories report estimated net worth and uncertified personal valuations for {prospect.full_name}.",
+                category=ClaimCategory.FUNDING_FINANCIAL,
+                materiality=Materiality.HIGH,
+                status=ClaimStatus.UNVERIFIED,
+                check1_passed=False,
+                check2_passed=False,
+                refusal_code="REF-01",
+                refusal_reason=(
+                    "No Tier-1 primary source (government registry, regulatory filing, or official corporate domain) "
+                    "corroborated this assertion. While third-party aggregators published speculative estimates, "
+                    "no audited statutory filing or sovereign disclosure exists to substantiate it."
+                )
+            )
+            claims.append(agg_claim)
+
         for c in claims:
             if c.refusal_code:
                 self.audit.log(prospect.prospect_id, "ADVERSARIAL_REFUSAL_PROCESSED", {

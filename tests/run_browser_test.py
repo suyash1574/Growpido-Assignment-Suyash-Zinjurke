@@ -124,7 +124,12 @@ async def main():
             print(f"-> Jurisdiction Chip: {loc_text}")
 
             assert dossier_rows > 0
+            assert dossier_rows <= 5, f"Dossier rows {dossier_rows} exceeded one-page budget of 5"
             assert gaps_count == 3
+
+            refusal_code_text = await page.inner_text("#refusal-code")
+            print(f"-> Verified Quarantined Refusal Code in Diagnostic: {refusal_code_text}")
+            assert "REF-" in refusal_code_text
 
             await browser.close()
             print("\n=======================================================")

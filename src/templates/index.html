@@ -6,10 +6,18 @@
   <title>Growpido — Executive Prospect Intelligence Engine (Track B)</title>
   <!-- TailwindCSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    @media print {
+      @page { size: A4 portrait; margin: 10mm; }
+      body { background: white !important; color: #0f172a !important; font-size: 10.5px !important; }
+      header, #ingest-section, #candidate-confirmation-area, #human-gate-section, #pipeline-status, footer, .no-print { display: none !important; }
+      #diagnostic-section { display: block !important; margin: 0 !important; padding: 0 !important; border: none !important; box-shadow: none !important; }
+      .gradient-border { border: 1px solid #cbd5e1 !important; background: white !important; }
+      * { color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
     .gradient-border {
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative; border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(15, 23, 42, 0.7);
       backdrop-filter: blur(12px);
     }
@@ -579,16 +587,17 @@
           </div>
           <button 
             type="button" 
-            class="btn-confirm-candidate w-full py-2 px-3 mt-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-emerald-600/20 transition flex items-center justify-center space-x-1.5"
+            class="btn-confirm-candidate w-full py-2 px-3 mt-2 ${cand.track_b_compliant ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20' : 'bg-slate-800 border border-rose-500/40 text-rose-300 cursor-not-allowed'} rounded-lg text-xs font-semibold shadow-md transition flex items-center justify-center space-x-1.5"
             data-url="${escapeHtml(cand.linkedin_url)}"
             data-name="${escapeHtml(cand.full_name)}"
             data-headline="${escapeHtml(cand.headline || '')}"
             data-location="${escapeHtml(cand.location || '')}"
             data-company="${escapeHtml(cand.company || '')}"
             data-role="${escapeHtml(cand.role || '')}"
+            data-trackb="${cand.track_b_compliant ? 'true' : 'false'}"
           >
-            <i class="fa-solid fa-check"></i>
-            <span>Confirm & Launch Deep Intelligence</span>
+            <i class="fa-solid ${cand.track_b_compliant ? 'fa-check' : 'fa-ban'}"></i>
+            <span>${cand.track_b_compliant ? 'Confirm & Launch Deep Intelligence' : 'Blocked: Outside Track B Scope'}</span>
           </button>
         `;
         candidateCardsContainer.appendChild(card);
@@ -597,13 +606,19 @@
       // Bind confirm buttons
       candidateCardsContainer.querySelectorAll('.btn-confirm-candidate').forEach(btn => {
         btn.addEventListener('click', () => {
+          const isTrackB = btn.getAttribute('data-trackb') === 'true';
+          if (!isTrackB) {
+            alert("Track B Scope Restriction: This target is outside the UAE Founder, CEO, or Fund Manager profile. Under Track B requirements, execution is restricted to UAE commercial leaders.");
+            return;
+          }
           const payload = {
             linkedin_url: btn.getAttribute('data-url'),
             candidate_name: btn.getAttribute('data-name'),
             candidate_headline: btn.getAttribute('data-headline'),
             candidate_location: btn.getAttribute('data-location'),
             candidate_company: btn.getAttribute('data-company'),
-            candidate_role: btn.getAttribute('data-role')
+            candidate_role: btn.getAttribute('data-role'),
+            enforce_track_b: true
           };
           console.log("Candidate confirmed by advisor:", payload);
           launchPipeline(payload);
@@ -834,13 +849,20 @@
       const locEl = document.getElementById('diag-prospect-location');
       if (locEl) locEl.textContent = prospect.location_country || 'Global';
 
-      // 1. Table
+      // 1. Table (Rule BR-R01: Exclude contradicted and quarantined claims from the Verified Dossier)
       const tbody = document.getElementById('dossier-table-body');
       tbody.innerHTML = '';
-      const verifiedClaims = data.claims.filter(c => c.status === 'VERIFIED');
-      const partialClaims = data.claims.filter(c => c.status === 'PARTIALLY_VERIFIED');
+      const verifiedClaims = (data.claims || []).filter(c => c.status === 'VERIFIED' && !c.contradiction_detected && !c.refusal_code);
+      const partialClaims = (data.claims || []).filter(c => c.status === 'PARTIALLY_VERIFIED' && !c.contradiction_detected && !c.refusal_code);
       const displayClaims = [...verifiedClaims, ...partialClaims];
-      const itemsToRender = displayClaims.length > 0 ? displayClaims : data.claims;
+      // One-Page Briefing constraint: display top 5 material claims
+      const itemsToRender = displayClaims.slice(0, 5);
+
+      if (itemsToRender.length === 0) {
+        const emptyTr = document.createElement('tr');
+        emptyTr.innerHTML = `<td colspan="5" class="p-4 text-center text-xs text-slate-400">Zero assertions met Tier-1 primary register standards. All uncorroborated claims are quarantined in the Refusal Audit below.</td>`;
+        tbody.appendChild(emptyTr);
+      }
 
       itemsToRender.forEach(c => {
         const tr = document.createElement('tr');

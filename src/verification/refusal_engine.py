@@ -28,7 +28,12 @@ class RefusalEngine:
                     claim.refusal_code = "REF-04"
                     claim.refusal_reason = cls.REFUSAL_REASONS["REF-04"]
             elif claim.status == ClaimStatus.PARTIALLY_VERIFIED and claim.contradiction_detected:
+                claim.status = ClaimStatus.UNVERIFIED
                 claim.refusal_code = "REF-02"
-                claim.refusal_reason = f"{cls.REFUSAL_REASONS['REF-02']} Details: {claim.contradiction_details or 'Discrepancy found'}"
+                claim.refusal_reason = f"{cls.REFUSAL_REASONS['REF-02']} Details: {claim.contradiction_details or 'Discrepancy found across public sources.'}"
+
+            # Guarantee any claim with an active refusal code is formally UNVERIFIED (quarantined)
+            if claim.refusal_code:
+                claim.status = ClaimStatus.UNVERIFIED
 
         return claims

@@ -132,6 +132,22 @@ class Database:
             cur.execute("ALTER TABLE audit_log ADD COLUMN event_hash TEXT NOT NULL DEFAULT ''")
         except Exception:
             pass
+
+        # Engine-level SQLite immutability triggers: physically prohibit UPDATE or DELETE
+        cur.execute("""
+        CREATE TRIGGER IF NOT EXISTS trg_audit_log_prevent_update
+        BEFORE UPDATE ON audit_log
+        BEGIN
+            SELECT RAISE(ABORT, 'IMMUTABLE_AUDIT_LOG: Direct updates are strictly prohibited on append-only cryptographic audit log');
+        END;
+        """)
+        cur.execute("""
+        CREATE TRIGGER IF NOT EXISTS trg_audit_log_prevent_delete
+        BEFORE DELETE ON audit_log
+        BEGIN
+            SELECT RAISE(ABORT, 'IMMUTABLE_AUDIT_LOG: Direct deletions are strictly prohibited on append-only cryptographic audit log');
+        END;
+        """)
         conn.commit()
 
     def save_prospect(self, p: Prospect):
