@@ -139,7 +139,22 @@ class UnifiedLLMClient:
             start = cleaned.find("{")
             end = cleaned.rfind("}")
             if start != -1 and end != -1 and end > start:
-                return json.loads(cleaned[start : end + 1])
+                try:
+                    return json.loads(cleaned[start : end + 1])
+                except json.JSONDecodeError:
+                    # Strip trailing commas or attempt bracket closure
+                    sub = cleaned[start : end + 1]
+                    sub_fixed = re.sub(r',\s*([\]}])', r'\1', sub)
+                    try:
+                        return json.loads(sub_fixed)
+                    except Exception:
+                        pass
+
+            # Fallback: regex extraction for claims structure if present
+            if '"claims"' in cleaned:
+                claim_matches = re.findall(r'\{\s*"claim_text":\s*"([^"]+)",\s*"category":\s*"([^"]+)"\s*\}', cleaned)
+                if claim_matches:
+                    return {"claims": [{"claim_text": m[0], "category": m[1]} for m in claim_matches]}
             raise
 
 # Global singleton client instance

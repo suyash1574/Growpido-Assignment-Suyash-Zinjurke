@@ -12,7 +12,7 @@ GROQ_MODEL = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "groq")
 
 # NVIDIA Fallback Settings
-NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "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")
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
 NVIDIA_MODEL = os.getenv("NVIDIA_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b")
 NVIDIA_BASE_URL = os.getenv("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1")
 

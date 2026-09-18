@@ -32,7 +32,8 @@ class Orchestrator:
         candidate_headline: str = None,
         candidate_location: str = None,
         candidate_company: str = None,
-        candidate_role: str = None
+        candidate_role: str = None,
+        enforce_track_b: bool = False
     ) -> Dict[str, Any]:
         """
         Coordinates full intelligence pipeline up to the Human Gate:
@@ -72,6 +73,38 @@ class Orchestrator:
             primary_role = candidate_role or candidate_headline or "Executive & Leader"
             current_company = candidate_company or "Commercial Enterprise"
 
+        # Track B Compliance Evaluation: UAE-based founder, CEO, or fund manager
+        loc_lower = location_country.lower()
+        role_lower = (primary_role or "").lower()
+        headline_lower = (candidate_headline or "").lower()
+
+        is_uae = any(k in loc_lower for k in ["uae", "united arab emirates", "dubai", "abu dhabi", "sharjah"])
+        is_exec = any(k in role_lower or k in headline_lower for k in [
+            "founder", "co-founder", "cofounder", "ceo", "chief executive",
+            "managing partner", "general partner", "fund manager", "managing director",
+            "vice president", "president", "partner", "investor", "venture"
+        ])
+        is_political = any(k in role_lower or k in headline_lower or k in resolved_name.lower() for k in [
+            "prime minister", "president of india", "minister", "parliament", "lok sabha", "senator"
+        ])
+
+        if is_political or not is_uae or not is_exec:
+            track_b_compliant = False
+            reasons = []
+            if is_political:
+                reasons.append("Political/public governance role outside Track B commercial scope")
+            if not is_uae:
+                reasons.append(f"Non-UAE jurisdiction ({location_country})")
+            if not is_exec:
+                reasons.append(f"Non-Founder/CEO/Fund Manager role ({primary_role})")
+            compliance_notes = f"Track B Scope Warning: {'; '.join(reasons)}"
+        else:
+            track_b_compliant = True
+            compliance_notes = "Track B Compliant: Verified UAE-based Founder, CEO, or Fund Manager"
+
+        if enforce_track_b and not track_b_compliant:
+            raise ValueError(f"Track B Scope Violation: {compliance_notes}")
+
         prospect = Prospect(
             linkedin_url=target_info["canonical_url"],
             slug=target_info["slug"],
@@ -80,6 +113,8 @@ class Orchestrator:
             primary_role=primary_role,
             location_country=location_country,
             sector=sector,
+            track_b_compliant=track_b_compliant,
+            compliance_notes=compliance_notes,
             status=ProspectStatus.DISCOVERING
         )
         self.db.save_prospect(prospect)
@@ -87,40 +122,57 @@ class Orchestrator:
             "url": linkedin_url,
             "name": prospect.full_name,
             "sector": prospect.sector,
-            "location_country": prospect.location_country
+            "location_country": prospect.location_country,
+            "track_b_compliant": prospect.track_b_compliant,
+            "compliance_notes": prospect.compliance_notes
         })
 
-        # 2. Live OSINT Discovery
+        if not prospect.track_b_compliant:
+            self.audit.log(prospect.prospect_id, "TRACK_B_NON_COMPLIANCE_FLAGGED", {
+                "prospect_name": prospect.full_name,
+                "notes": prospect.compliance_notes
+            })
+
+        # 2. Live OSINT Discovery (Dynamic, zero hardcoded URLs)
         queries = [
-            f'"{prospect.full_name}" biography OR tenure OR profile',
-            f'"{prospect.full_name}" {prospect.primary_role or prospect.current_company or ""}'.strip(),
-            f'"{prospect.full_name}" site:gov OR site:gov.in OR site:gov.ae OR site:gov.uk OR site:wikipedia.org'
+            f'"{prospect.full_name}" ("{prospect.primary_role}" OR "{prospect.current_company}")',
+            f'"{prospect.full_name}" biography OR career OR tenure OR founding',
         ]
+        if is_uae:
+            queries.append(f'"{prospect.full_name}" site:ae OR site:gov.ae OR site:difc.ae OR site:adgm.com OR site:zawya.com OR site:thenationalnews.com')
+        else:
+            queries.append(f'"{prospect.full_name}" site:gov OR site:gov.in OR site:gov.uk OR site:wikipedia.org')
 
         discovered_urls = []
         for q in queries:
             try:
-                results = await self.search_client.search(q, max_results=3)
+                results = await self.search_client.search(q, max_results=4)
+                self.audit.log(prospect.prospect_id, "OSINT_QUERY_EXECUTED", {
+                    "query": q,
+                    "results_count": len(results)
+                })
                 for r in results:
                     discovered_urls.append(r["url"])
-            except Exception:
+            except Exception as search_err:
+                self.audit.log(prospect.prospect_id, "OSINT_QUERY_FAILED", {
+                    "query": q,
+                    "error": str(search_err)
+                })
                 continue
 
-        # Add guaranteed Tier-1 corporate and sovereign registry anchors for primary verification
-        if "modi" in prospect.full_name.lower():
-            discovered_urls.extend([
-                "https://www.pmindia.gov.in/en/",
-                "https://india.gov.in/my-government/prime-minister",
-                "https://sansad.in/ls"
-            ])
-        elif "mouchawar" in prospect.slug or "mouchawar" in prospect.full_name.lower():
-            discovered_urls.extend([
-                "https://press.aboutamazon.com/2017/3/amazon-to-acquire-souq-com",
-                "https://press.aboutamazon.com/2019/5/souq-becomes-amazon-ae-in-the-uae"
-            ])
-
         # Deduplicate URLs
-        discovered_urls = list(dict.fromkeys(discovered_urls))[:8]
+        discovered_urls = list(dict.fromkeys(discovered_urls))[:10]
+
+        # Fail fast and honestly if live search retrieved zero public sources
+        if not discovered_urls:
+            self.audit.log(prospect.prospect_id, "OSINT_DISCOVERY_EMPTY", {
+                "prospect_name": prospect.full_name,
+                "reason": "No verifiable public web sources retrieved by live search client."
+            })
+            raise RuntimeError(
+                f"OSINT discovery failed to retrieve verifiable public sources for candidate '{prospect.full_name}'. "
+                f"Pipeline execution halted under Rule BR-R01 (Accuracy Dominance)."
+            )
 
         # 3. Web Fetching & Snapshotting (Parallel Async)
         evidence_sources: List[EvidenceSource] = []
@@ -143,13 +195,23 @@ class Orchestrator:
             evidence_sources.append(src)
             if doc.get("text"):
                 discovered_texts.append(f"Source ({tier.value}): {doc.get('text')[:3000]}")
+            self.audit.log(prospect.prospect_id, "SOURCE_SNAPSHOT_INDEXED", {
+                "url": src.url,
+                "domain": src.domain,
+                "tier": src.source_tier.value,
+                "http_status": src.http_status,
+                "content_hash": src.content_hash
+            })
 
         self.db.save_sources(evidence_sources)
         self.audit.log(prospect.prospect_id, "SOURCES_INDEXED", {"count": len(evidence_sources)})
 
-        # 4. Claim Extraction
+        # 4. Claim Extraction (All factual claims extracted without capping)
         claims = self.claim_auditor.extract_claims(prospect.prospect_id, prospect.full_name, discovered_texts)
-        self.audit.log(prospect.prospect_id, "CLAIMS_EXTRACTED", {"count": len(claims)})
+        self.audit.log(prospect.prospect_id, "CLAIMS_EXTRACTED", {
+            "count": len(claims),
+            "claims": [c.claim_text for c in claims]
+        })
 
         # 5. Two-Stage Double-Check Verification
         for claim in claims:
@@ -160,6 +222,12 @@ class Orchestrator:
                 claim.primary_source_id = c1_result["primary_source"].source_id
                 claim.primary_source_url = c1_result["primary_source"].url
 
+            self.audit.log(prospect.prospect_id, "CHECK_1_PRIMARY_EVALUATED", {
+                "claim_text": claim.claim_text,
+                "passed": claim.check1_passed,
+                "primary_source_url": claim.primary_source_url
+            })
+
             # Check 2: Independent Corroboration & Contradiction Check
             c2_result = self.contradiction_detector.evaluate_check2_corroboration(claim, evidence_sources, c1_result["primary_source"])
             claim.check2_passed = c2_result["corroborated"]
@@ -167,11 +235,27 @@ class Orchestrator:
             claim.contradiction_detected = c2_result["contradiction_detected"]
             claim.contradiction_details = c2_result.get("details")
 
+            self.audit.log(prospect.prospect_id, "CHECK_2_CORROBORATION_EVALUATED", {
+                "claim_text": claim.claim_text,
+                "corroborated": claim.check2_passed,
+                "secondary_source_url": claim.secondary_source_url,
+                "contradiction_detected": claim.contradiction_detected,
+                "contradiction_details": claim.contradiction_details
+            })
+
             # 3-State Labeling
             claim.status = ClassifierHub.classify(claim)
 
         # 6. Adversarial Refusal Processing
         claims = RefusalEngine.process(claims)
+        for c in claims:
+            if c.refusal_code:
+                self.audit.log(prospect.prospect_id, "ADVERSARIAL_REFUSAL_PROCESSED", {
+                    "claim_text": c.claim_text,
+                    "refusal_code": c.refusal_code,
+                    "refusal_reason": c.refusal_reason
+                })
+
         self.db.save_claims(claims)
         self.audit.log(prospect.prospect_id, "VERIFICATION_COMPLETE", {"total": len(claims)})
 

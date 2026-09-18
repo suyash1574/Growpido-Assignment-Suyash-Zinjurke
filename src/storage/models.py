@@ -52,6 +52,8 @@ class CandidateMatch(BaseModel):
     linkedin_url: str
     snippet: Optional[str] = None
     relevance_score: float = 1.0
+    track_b_compliant: bool = True
+    compliance_notes: Optional[str] = None
 
 class Prospect(BaseModel):
     prospect_id: UUID = Field(default_factory=uuid4)
@@ -62,6 +64,8 @@ class Prospect(BaseModel):
     primary_role: Optional[str] = None
     location_country: Optional[str] = "UAE"
     sector: Optional[str] = "Executive Leadership"
+    track_b_compliant: bool = True
+    compliance_notes: Optional[str] = None
     status: ProspectStatus = ProspectStatus.INITIALIZED
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -116,3 +120,5 @@ class AuditEvent(BaseModel):
     actor: str = "SYSTEM_AGENT"
     event_payload: Dict[str, Any] = Field(default_factory=dict)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+    prev_hash: str = "GENESIS"
+    event_hash: str = ""

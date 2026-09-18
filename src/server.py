@@ -50,6 +50,7 @@ class ResearchRequest(BaseModel):
     candidate_location: Optional[str] = None
     candidate_company: Optional[str] = None
     candidate_role: Optional[str] = None
+    enforce_track_b: Optional[bool] = False
 
 class ClaimOverrideRequest(BaseModel):
     status: str
@@ -124,8 +125,10 @@ async def execute_research_pipeline(req: ResearchRequest):
             candidate_headline=req.candidate_headline,
             candidate_location=req.candidate_location,
             candidate_company=req.candidate_company,
-            candidate_role=req.candidate_role
+            candidate_role=req.candidate_role,
+            enforce_track_b=bool(req.enforce_track_b)
         )
+
         return {
             "success": True,
             "prospect_id": str(result["prospect"].prospect_id),
@@ -134,6 +137,12 @@ async def execute_research_pipeline(req: ResearchRequest):
             "claims": [c.model_dump(mode="json") for c in result["claims"]],
             "gaps": [g.model_dump(mode="json") for g in result["gaps"]]
         }
+    except ValueError as ve:
+        if "Track B Scope Violation" in str(ve):
+            raise HTTPException(status_code=422, detail=str(ve))
+        raise HTTPException(status_code=400, detail=str(ve))
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Pipeline execution failed: {str(e)}")
 
@@ -230,10 +239,17 @@ async def download_diagnostic_markdown(prospect_id: str):
     if not prospect_row:
         raise HTTPException(status_code=404, detail="Prospect not found")
 
+    prospect = Prospect(**prospect_row)
+    # Sovereign Human Gate Enforcement: diagnostic cannot be exported until formally approved
+    if prospect.status != ProspectStatus.APPROVED:
+        raise HTTPException(
+            status_code=403,
+            detail="Diagnostic export locked: Prospect has not been approved at the Sovereign Human Gate. Adjudicate claims and sign off before compilation."
+        )
+
     claim_rows = db.get_claims(prospect_id)
     gap_rows = db.get_gaps(prospect_id)
 
-    prospect = Prospect(**prospect_row)
     claims = [Claim(**c) for c in claim_rows]
     gaps = [StrategicGap(**g) for g in gap_rows]
 
@@ -254,6 +270,13 @@ async def download_diagnostic_json(prospect_id: str):
     if not prospect:
         raise HTTPException(status_code=404, detail="Prospect not found")
 
+    # Sovereign Human Gate Enforcement: diagnostic cannot be exported until formally approved
+    if prospect["status"] != ProspectStatus.APPROVED.value:
+        raise HTTPException(
+            status_code=403,
+            detail="Diagnostic export locked: Prospect has not been approved at the Sovereign Human Gate. Adjudicate claims and sign off before compilation."
+        )
+
     claims = db.get_claims(prospect_id)
     gaps = db.get_gaps(prospect_id)
     audit = db.get_audit_log(prospect_id)
@@ -272,3 +295,19 @@ async def download_diagnostic_json(prospect_id: str):
             "Content-Disposition": f'attachment; filename="Growpido_Dossier_{prospect["slug"]}.json"'
         }
     )
+
+@app.get("/api/prospects/{prospect_id}/audit/verify")
+async def verify_prospect_audit_trail(prospect_id: str):
+    """
+    Cryptographically verifies the immutable SHA-256 hash chain for a prospect's audit log.
+    """
+    prospect_row = db.get_prospect(prospect_id)
+    if not prospect_row:
+        raise HTTPException(status_code=404, detail="Prospect not found")
+
+    result = db.verify_audit_trail(prospect_id)
+    return {
+        "success": True,
+        "prospect_id": prospect_id,
+        "verification": result
+    }

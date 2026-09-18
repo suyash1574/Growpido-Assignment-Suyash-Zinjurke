@@ -1,5 +1,7 @@
 import sqlite3
 import json
+import hashlib
+from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 from uuid import UUID
@@ -38,6 +40,8 @@ class Database:
             primary_role TEXT,
             location_country TEXT DEFAULT 'UAE',
             sector TEXT DEFAULT 'Executive Leadership',
+            track_b_compliant INTEGER DEFAULT 1,
+            compliance_notes TEXT,
             status TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -45,6 +49,14 @@ class Database:
         """)
         try:
             cur.execute("ALTER TABLE prospects ADD COLUMN sector TEXT DEFAULT 'Executive Leadership'")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE prospects ADD COLUMN track_b_compliant INTEGER DEFAULT 1")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE prospects ADD COLUMN compliance_notes TEXT")
         except Exception:
             pass
         cur.execute("""
@@ -107,17 +119,35 @@ class Database:
             actor TEXT NOT NULL,
             event_payload TEXT NOT NULL,
             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            prev_hash TEXT NOT NULL DEFAULT 'GENESIS',
+            event_hash TEXT NOT NULL DEFAULT '',
             FOREIGN KEY(prospect_id) REFERENCES prospects(prospect_id)
         );
         """)
+        try:
+            cur.execute("ALTER TABLE audit_log ADD COLUMN prev_hash TEXT NOT NULL DEFAULT 'GENESIS'")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE audit_log ADD COLUMN event_hash TEXT NOT NULL DEFAULT ''")
+        except Exception:
+            pass
         conn.commit()
 
     def save_prospect(self, p: Prospect):
         conn = self.get_connection()
         conn.execute("""
-        INSERT OR REPLACE INTO prospects (prospect_id, linkedin_url, slug, full_name, current_company, primary_role, location_country, sector, status, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-        """, (str(p.prospect_id), p.linkedin_url, p.slug, p.full_name, p.current_company, p.primary_role, p.location_country, getattr(p, "sector", "Executive Leadership"), p.status.value))
+        INSERT OR REPLACE INTO prospects (
+            prospect_id, linkedin_url, slug, full_name, current_company, primary_role,
+            location_country, sector, track_b_compliant, compliance_notes, status, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        """, (
+            str(p.prospect_id), p.linkedin_url, p.slug, p.full_name, p.current_company, p.primary_role,
+            p.location_country, getattr(p, "sector", "Executive Leadership"),
+            1 if getattr(p, "track_b_compliant", True) else 0,
+            getattr(p, "compliance_notes", None),
+            p.status.value
+        ))
         conn.commit()
 
     def save_sources(self, sources: List[EvidenceSource]):
@@ -159,12 +189,81 @@ class Database:
         conn.commit()
 
     def log_audit(self, event: AuditEvent):
+        """
+        Appends an audit event to the cryptographically verifiable, immutable SHA-256 hash chain.
+        """
         conn = self.get_connection()
+        # Find head hash of the existing chain for this prospect
+        row = conn.execute(
+            "SELECT event_hash FROM audit_log WHERE prospect_id = ? ORDER BY rowid DESC LIMIT 1",
+            (str(event.prospect_id),)
+        ).fetchone()
+
+        prev_hash = row[0] if (row and row[0]) else "GENESIS"
+        canonical_payload = json.dumps(event.event_payload, sort_keys=True)
+        ts_str = event.timestamp.isoformat()
+        to_hash = f"{prev_hash}|{str(event.prospect_id)}|{event.event_type}|{event.actor}|{canonical_payload}|{ts_str}"
+        event_hash = hashlib.sha256(to_hash.encode("utf-8")).hexdigest()
+
+        event.prev_hash = prev_hash
+        event.event_hash = event_hash
+
         conn.execute("""
-        INSERT INTO audit_log (event_id, prospect_id, event_type, actor, event_payload)
-        VALUES (?, ?, ?, ?, ?)
-        """, (str(event.event_id), str(event.prospect_id), event.event_type, event.actor, json.dumps(event.event_payload)))
+        INSERT INTO audit_log (event_id, prospect_id, event_type, actor, event_payload, timestamp, prev_hash, event_hash)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (str(event.event_id), str(event.prospect_id), event.event_type, event.actor, canonical_payload, ts_str, prev_hash, event_hash))
         conn.commit()
+
+    def verify_audit_trail(self, prospect_id: str) -> Dict[str, Any]:
+        """
+        Cryptographically verifies the immutable SHA-256 hash chain for a prospect's audit log.
+        """
+        conn = self.get_connection()
+        rows = conn.execute(
+            "SELECT * FROM audit_log WHERE prospect_id = ? ORDER BY rowid ASC",
+            (str(prospect_id),)
+        ).fetchall()
+
+        if not rows:
+            return {
+                "valid": True,
+                "total_events": 0,
+                "head_hash": "GENESIS",
+                "details": "No audit records found."
+            }
+
+        expected_prev = "GENESIS"
+        for idx, r in enumerate(rows):
+            prev_h = r["prev_hash"] if "prev_hash" in r.keys() else "GENESIS"
+            curr_h = r["event_hash"] if "event_hash" in r.keys() else ""
+            if not curr_h:
+                continue
+
+            if prev_h != expected_prev:
+                return {
+                    "valid": False,
+                    "total_events": len(rows),
+                    "failed_at_index": idx,
+                    "reason": f"Broken chain at event {r['event_id']}: expected prev_hash '{expected_prev}', found '{prev_h}'"
+                }
+
+            to_hash = f"{prev_h}|{r['prospect_id']}|{r['event_type']}|{r['actor']}|{r['event_payload']}|{r['timestamp']}"
+            recomputed = hashlib.sha256(to_hash.encode("utf-8")).hexdigest()
+            if recomputed != curr_h:
+                return {
+                    "valid": False,
+                    "total_events": len(rows),
+                    "failed_at_index": idx,
+                    "reason": f"Hash mismatch at event {r['event_id']}: expected '{recomputed}', found '{curr_h}'"
+                }
+            expected_prev = curr_h
+
+        return {
+            "valid": True,
+            "total_events": len(rows),
+            "head_hash": expected_prev,
+            "details": f"Cryptographically verified chain of {len(rows)} immutable audit events."
+        }
 
     def get_prospect(self, prospect_id: str) -> Optional[Dict[str, Any]]:
         conn = self.get_connection()

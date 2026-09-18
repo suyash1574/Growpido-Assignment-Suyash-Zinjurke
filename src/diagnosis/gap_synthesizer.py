@@ -36,7 +36,7 @@ class GapSynthesizer:
                 rank=1,
                 dimension=GapDimension.AUTHORITY_UNDER_INDEXING,
                 title="Unleveraged Institutional Milestone Authority",
-                observation=f"{candidate_name}'s verified career milestones in {sector} are under-documented on personal digital channels.",
+                observation=f"{candidate_name}'s verified career milestones in {sector} remain concentrated in secondary corporate coverage rather than an indexed, authoritative executive archive.",
                 strategic_impact="Restricts inbound institutional partnership and strategic co-investment deal flow.",
                 recommendation=f"Establish a sovereign executive web domain housing verified career case studies, exits, and governance mandates within {location_country} and globally."
             ),
@@ -44,19 +44,19 @@ class GapSynthesizer:
                 prospect_id=prospect_id,
                 rank=2,
                 dimension=GapDimension.CHANNEL_DIVERSITY_DEFICIT,
-                title="Monolithic Channel Dependency Risk",
-                observation="Public executive commentary is strictly siloed on a single platform; absent from leading international podcast indices, keynote video archives, and policy panels.",
-                strategic_impact="Reaches only passive network followers rather than active global allocators and policy decision-makers.",
-                recommendation=f"Syndicate quarterly thought-leadership keynotes into guest columns on Tier-1 financial media covering {location_country} and regional leadership."
+                title="Concentrated Third-Party Channel Reliance",
+                observation=f"Public executive positioning for {candidate_name} is mediated primarily through third-party news citations rather than direct, authored policy and business perspectives.",
+                strategic_impact="Leaves market perception dependent on sporadic media coverage rather than proactive strategic narrative framing.",
+                recommendation=f"Syndicate regular thought-leadership columns and official addresses into Tier-1 regional business and trade publications covering {location_country}."
             ),
             StrategicGap(
                 prospect_id=prospect_id,
                 rank=3,
                 dimension=GapDimension.NARRATIVE_FRAGMENTATION,
-                title="Operator vs. Strategic Advisory Ambiguity",
-                observation="Public narrative blurs primary leadership roles with informal advisory activities without distinct positioning guardrails.",
+                title="Operational vs. Strategic Governance Narrative Tension",
+                observation=f"Publicly accessible records emphasize tactical operational events without a clearly codified, long-term strategic and institutional advisory thesis.",
                 strategic_impact="Creates ambiguity regarding commercial focus, advisory capacity, and institutional mandate.",
-                recommendation="Codify a distinct 'Executive Fellowship & Advisory Philosophy' narrative pillar separate from primary operational duties."
+                recommendation="Codify a distinct 'Executive Fellowship & Advisory Philosophy' narrative pillar separate from day-to-day operational duties."
             )
         ]
 
@@ -69,6 +69,10 @@ class GapSynthesizer:
             f"Verified Facts:\n{facts_summary}\n\n"
             f"Operating Jurisdiction: {location_country}\n"
             f"Primary Sector: {sector}\n\n"
+            "STRICT EVIDENCE GROUNDING RULES:\n"
+            "1. Base observations strictly on the provided verified facts and public record.\n"
+            "2. DO NOT invent or speculate about absent channels (e.g. do NOT claim absence of podcasts, panels, or videos without explicit evidence).\n"
+            "3. Frame observations around documented authority indexing, narrative clarity, and institutional syndication.\n\n"
             "Synthesize exactly THREE strategic presence gaps explaining how this executive underrepresents their market authority:\n"
             "Gap 1: Authority Under-Indexing (dimension: 'AUTHORITY_UNDER_INDEXING')\n"
             "Gap 2: Channel Diversity Deficit (dimension: 'CHANNEL_DIVERSITY_DEFICIT')\n"
@@ -77,8 +81,8 @@ class GapSynthesizer:
             "- 'rank': integer (1, 2, or 3)\n"
             "- 'dimension': string matching one of the 3 dimensions above\n"
             "- 'title': short punchy title\n"
-            "- 'observation': specific factual observation\n"
-            "- 'strategic_impact': why this hurts their business/advisory standing\n"
+            "- 'observation': specific factual observation grounded in evidence\n"
+            "- 'strategic_impact': commercial or strategic impact\n"
             "- 'recommendation': Growpido's actionable recommendation"
         )
 

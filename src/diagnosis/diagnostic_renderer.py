@@ -49,15 +49,16 @@ class DiagnosticRenderer:
 
         # 3. Demonstrated Refused Claim (Track B Requirement)
         md.append("## 3. Adversarial Refusal Demonstration (Track B Mandate)")
-        demo_refused = refused_claims[0] if refused_claims else Claim(
-            prospect_id=prospect.prospect_id,
-            claim_text="Personally manages a proprietary $50M early-stage angel investment portfolio across 40 MENA startups.",
-            refusal_code="REF-01",
-            refusal_reason="Aggregator mention only. No regulatory filing (ADGM/DIFC/DFSA) or audited corporate portfolio statement exists to corroborate the $50M metric. System refused inclusion pursuant to Rule BR-R01 (Accuracy Dominance)."
-        )
-
-        md.append(f"> **Refused Claim**: *\"{demo_refused.claim_text}\"*")
-        md.append(f"> \n> **Refusal Code**: `{demo_refused.refusal_code or 'REF-01'}`")
-        md.append(f"> \n> **Causal Rationale**: {demo_refused.refusal_reason or 'Excluded due to lack of primary evidence.'}")
+        if refused_claims:
+            for idx, refused in enumerate(refused_claims, 1):
+                md.append(f"> **Quarantined Claim #{idx}**: *\"{refused.claim_text}\"*")
+                md.append(f"> \n> **Refusal Code**: `{refused.refusal_code or 'REF-01'}`")
+                md.append(f"> \n> **Causal Rationale**: {refused.refusal_reason or 'Excluded pursuant to Rule BR-R01 (Accuracy Dominance): Unsubstantiated by Tier-1 primary records or contested by independent sources.'}\n")
+        else:
+            md.append(
+                "> **Refusal Engine Status**: *Zero assertions quarantined.* "
+                "All extracted factual claims achieved full Tier-1 primary source entailment "
+                "or independent secondary corroboration under Rule BR-R01 (Accuracy Dominance)."
+            )
 
         return "\n".join(md)
