@@ -15,9 +15,10 @@ class DiagnosticRenderer:
 
         md = []
         md.append(f"# Executive Diagnostic Briefing: {prospect.full_name}")
-        md.append(f"**Target Role / Company**: {prospect.primary_role or 'Senior Executive'} | {prospect.current_company or 'UAE Market Leader'}")
-        md.append(f"**Jurisdiction**: {prospect.location_country} | **LinkedIn Profile**: [{prospect.slug}]({prospect.linkedin_url})")
-        md.append(f"**Fact Verification Standard**: Double-Checked against Tier-1 Primary Registers (ADGM, DIFC, Official Corporate Disclosures)")
+        md.append(f"**Target Role / Company**: {prospect.primary_role or 'Senior Executive'} | {prospect.current_company or 'Market Leader'}")
+        sector_str = getattr(prospect, 'sector', 'Enterprise Sector') or 'Enterprise Sector'
+        md.append(f"**Sector**: {sector_str} | **Jurisdiction**: {prospect.location_country} | **LinkedIn Profile**: [{prospect.slug}]({prospect.linkedin_url})")
+        md.append(f"**Fact Verification Standard**: Double-Checked against Tier-1 Primary Registers (Sovereign Portals, Government Registries, Official Corporate Disclosures)")
         md.append("\n---\n")
 
         # 1. Executive Fact Dossier

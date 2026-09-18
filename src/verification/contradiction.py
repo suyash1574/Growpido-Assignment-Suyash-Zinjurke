@@ -1,14 +1,14 @@
 import json
 from typing import List, Dict, Any, Optional
-from groq import Groq
-from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.llm_client import llm_client, UnifiedLLMClient
 from src.storage.models import Claim, EvidenceSource, SourceTier
 
 class ContradictionDetector:
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or GROQ_API_KEY
-        self.model = model or GROQ_MODEL
-        self.client = Groq(api_key=self.api_key) if self.api_key else None
+        if api_key or model:
+            self.client = UnifiedLLMClient(groq_api_key=api_key, groq_model=model)
+        else:
+            self.client = llm_client
 
     def evaluate_check2_corroboration(
         self, claim: Claim, sources: List[EvidenceSource], primary_source: Optional[EvidenceSource]
@@ -56,13 +56,11 @@ class ContradictionDetector:
         )
 
         try:
-            resp = self.client.chat.completions.create(
-                model=self.model,
+            result = self.client.chat_completion_json(
                 messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
+                max_tokens=300,
                 temperature=0.0
             )
-            result = json.loads(resp.choices[0].message.content)
             return {
                 "corroborated": result.get("corroborated", False),
                 "corroborating_url": result.get("corroborating_url"),

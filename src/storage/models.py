@@ -43,6 +43,16 @@ class GapDimension(str, Enum):
     CHANNEL_DIVERSITY_DEFICIT = "CHANNEL_DIVERSITY_DEFICIT"
     NARRATIVE_FRAGMENTATION = "NARRATIVE_FRAGMENTATION"
 
+class CandidateMatch(BaseModel):
+    candidate_id: UUID = Field(default_factory=uuid4)
+    full_name: str
+    headline: Optional[str] = None
+    current_company: Optional[str] = None
+    location: Optional[str] = None
+    linkedin_url: str
+    snippet: Optional[str] = None
+    relevance_score: float = 1.0
+
 class Prospect(BaseModel):
     prospect_id: UUID = Field(default_factory=uuid4)
     linkedin_url: str
@@ -50,7 +60,8 @@ class Prospect(BaseModel):
     full_name: str
     current_company: Optional[str] = None
     primary_role: Optional[str] = None
-    location_country: str = "UAE"
+    location_country: Optional[str] = "UAE"
+    sector: Optional[str] = "Executive Leadership"
     status: ProspectStatus = ProspectStatus.INITIALIZED
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

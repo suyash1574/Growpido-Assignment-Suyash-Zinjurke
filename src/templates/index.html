@@ -64,54 +64,135 @@
       </div>
 
       <!-- Ingestion & Benchmark Picker Section -->
-      <section class="gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl">
-        <div class="max-w-3xl">
-          <h2 class="text-xl font-bold text-white flex items-center space-x-2">
-            <span class="flex h-6 w-6 rounded-full bg-indigo-600 text-xs items-center justify-center text-white">1</span>
-            <span>Prospect Ingestion & OSINT Target Selection</span>
-          </h2>
-          <p class="text-sm text-slate-400 mt-1">Provide a canonical LinkedIn public profile URL to trigger live adversarial discovery.</p>
-        </div>
-
-        <!-- Quick Benchmark Selector -->
-        <div class="mt-4 p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center space-x-3 text-sm">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Benchmark Target:</span>
-            <span class="font-medium text-white">Ronaldo Mouchawar</span>
-            <span class="text-xs text-slate-400">(VP Amazon MENA, Co-Founder Souq.com)</span>
+      <section class="gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="max-w-3xl">
+            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+              <span class="flex h-6 w-6 rounded-full bg-indigo-600 text-xs items-center justify-center text-white">1</span>
+              <span>Prospect Ingestion & Upstream Confirmation Gate</span>
+            </h2>
+            <p class="text-sm text-slate-400 mt-1">Search executive profiles by name and confirm candidate identity before initiating adversarial verification.</p>
           </div>
-          <button id="btn-prefill" type="button" class="text-xs px-3 py-1.5 rounded-md bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 border border-indigo-500/40 transition flex items-center space-x-1.5">
-            <i class="fa-solid fa-bolt text-indigo-400"></i>
-            <span>Load Assessment Target</span>
-          </button>
-        </div>
 
-        <!-- Ingestion Form -->
-        <form id="research-form" class="mt-6 flex flex-col sm:flex-row gap-3">
-          <div class="relative flex-1">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-              <i class="fa-brands fa-linkedin text-lg"></i>
-            </div>
-            <input 
-              type="url" 
-              id="linkedin-url" 
-              required
-              placeholder="https://www.linkedin.com/in/ronaldo-mouchawar-souq" 
-              class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+          <!-- Ingestion Mode Tabs -->
+          <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 self-start md:self-auto">
+            <button 
+              id="tab-name-btn"
+              type="button" 
+              class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-white bg-indigo-600 shadow-sm transition flex items-center space-x-1.5"
             >
+              <i class="fa-solid fa-user-check"></i>
+              <span>Name Search & Gate</span>
+            </button>
+            <button 
+              id="tab-url-btn"
+              type="button" 
+              class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center space-x-1.5"
+            >
+              <i class="fa-brands fa-linkedin"></i>
+              <span>Direct LinkedIn URL</span>
+            </button>
           </div>
-          <button 
-            type="submit" 
-            id="submit-btn"
-            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center space-x-2 text-sm shrink-0"
-          >
-            <i class="fa-solid fa-satellite-dish"></i>
-            <span>Run Intelligence Pipeline</span>
-          </button>
-        </form>
+        </div>
+
+        <!-- Quick Benchmark Selectors -->
+        <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center space-x-2 text-sm">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fast Benchmarks:</span>
+            <span class="text-xs text-slate-500">Click to instantly populate candidate target</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btn-prefill-modi" type="button" class="text-xs px-3 py-1.5 rounded-md bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/40 border border-indigo-500/30 transition flex items-center space-x-1.5">
+              <i class="fa-solid fa-landmark text-indigo-400"></i>
+              <span>Narendra Modi (India Prime Minister)</span>
+            </button>
+            <button id="btn-prefill-mouchawar" type="button" class="text-xs px-3 py-1.5 rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700 transition flex items-center space-x-1.5">
+              <i class="fa-solid fa-bolt text-amber-400"></i>
+              <span>Ronaldo Mouchawar (VP Amazon MENA)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel A: Name-Based Search (Default) -->
+        <div id="panel-name-search" class="space-y-4">
+          <form id="candidate-search-form" class="grid grid-cols-1 md:grid-cols-12 gap-3">
+            <div class="relative md:col-span-6">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                <i class="fa-solid fa-user text-sm"></i>
+              </div>
+              <input 
+                type="text" 
+                id="candidate-name-input" 
+                required
+                placeholder="Person's Full Name (e.g. Narendra Modi, Ronaldo Mouchawar)" 
+                class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              >
+            </div>
+            <div class="relative md:col-span-4">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                <i class="fa-solid fa-building text-sm"></i>
+              </div>
+              <input 
+                type="text" 
+                id="candidate-context-input" 
+                placeholder="Optional Context / Role (e.g. Prime Minister, Souq)" 
+                class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              >
+            </div>
+            <div class="md:col-span-2">
+              <button 
+                type="submit" 
+                id="btn-search-candidates"
+                class="w-full h-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center space-x-2 text-sm"
+              >
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Find Profiles</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Candidate Confirmation Gate Cards Area -->
+          <div id="candidate-confirmation-area" class="hidden mt-6 space-y-3 pt-4 border-t border-slate-800">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="h-2.5 w-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                <h3 class="text-sm font-bold text-amber-200 uppercase tracking-wider">Candidate Confirmation Gate (Human Gate 1)</h3>
+              </div>
+              <span class="text-xs text-slate-400">Select target candidate to proceed with OSINT research</span>
+            </div>
+            <div id="candidate-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <!-- Dynamically populated candidate cards -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel B: Direct LinkedIn URL -->
+        <div id="panel-direct-url" class="hidden">
+          <form id="research-form" class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                <i class="fa-brands fa-linkedin text-lg"></i>
+              </div>
+              <input 
+                type="url" 
+                id="linkedin-url" 
+                placeholder="https://www.linkedin.com/in/ronaldo-mouchawar-souq" 
+                class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              >
+            </div>
+            <button 
+              type="submit" 
+              id="submit-btn"
+              class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center space-x-2 text-sm shrink-0"
+            >
+              <i class="fa-solid fa-satellite-dish"></i>
+              <span>Run Intelligence Pipeline</span>
+            </button>
+          </form>
+        </div>
 
         <!-- Progress Spinner & Status Box -->
-        <div id="pipeline-status" class="hidden mt-6 p-5 rounded-xl bg-slate-900/90 border border-indigo-500/30 space-y-4">
+        <div id="pipeline-status" class="hidden p-5 rounded-xl bg-slate-900/90 border border-indigo-500/30 space-y-4">
           <div class="flex items-center space-x-3">
             <div class="animate-spin text-indigo-400 text-lg">
               <i class="fa-solid fa-circle-notch"></i>
@@ -122,7 +203,7 @@
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
             <div id="step-1" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
               <span class="h-2 w-2 rounded-full bg-slate-600" id="step-1-dot"></span>
-              <span>1. Canonical Ingest</span>
+              <span>1. Profile Ingestion</span>
             </div>
             <div id="step-2" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
               <span class="h-2 w-2 rounded-full bg-slate-600" id="step-2-dot"></span>
@@ -196,9 +277,13 @@
         <div class="gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
             <div>
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                <i class="fa-solid fa-circle-check mr-1"></i> Diagnostic Approved
-              </span>
+              <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <i class="fa-solid fa-circle-check mr-1"></i> Diagnostic Approved
+                </span>
+                <span id="diag-prospect-sector" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Sector</span>
+                <span id="diag-prospect-location" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">Jurisdiction</span>
+              </div>
               <h2 class="text-2xl font-bold text-white mt-2" id="diag-prospect-name">Executive Briefing</h2>
               <p class="text-sm text-slate-400" id="diag-prospect-role">Role & Company</p>
             </div>
@@ -320,11 +405,28 @@
     let currentPipelineData = null;
     let activeModalClaimId = null;
 
-    // Elements
+    // Elements - Tabs & Panels
+    const tabNameBtn = document.getElementById('tab-name-btn');
+    const tabUrlBtn = document.getElementById('tab-url-btn');
+    const panelNameSearch = document.getElementById('panel-name-search');
+    const panelDirectUrl = document.getElementById('panel-direct-url');
+
+    // Elements - Search & Ingest
+    const candidateSearchForm = document.getElementById('candidate-search-form');
+    const candidateNameInput = document.getElementById('candidate-name-input');
+    const candidateContextInput = document.getElementById('candidate-context-input');
+    const btnSearchCandidates = document.getElementById('btn-search-candidates');
+    const candidateConfirmationArea = document.getElementById('candidate-confirmation-area');
+    const candidateCardsContainer = document.getElementById('candidate-cards-container');
+
     const researchForm = document.getElementById('research-form');
     const linkedinInput = document.getElementById('linkedin-url');
-    const btnPrefill = document.getElementById('btn-prefill');
     const submitBtn = document.getElementById('submit-btn');
+
+    const btnPrefillModi = document.getElementById('btn-prefill-modi');
+    const btnPrefillMouchawar = document.getElementById('btn-prefill-mouchawar');
+
+    // Elements - Status, Gates, Diagnostics
     const pipelineStatus = document.getElementById('pipeline-status');
     const statusHeadline = document.getElementById('status-headline');
     const humanGateSection = document.getElementById('human-gate-section');
@@ -334,53 +436,198 @@
     const btnDownloadJson = document.getElementById('btn-download-json');
     const overrideModal = document.getElementById('override-modal');
 
-    // Prefill Target
-    btnPrefill.addEventListener('click', () => {
-      linkedinInput.value = 'https://www.linkedin.com/in/ronaldo-mouchawar-souq';
-      linkedinInput.focus();
+    // Tab Switching
+    function setTab(mode) {
+      if (mode === 'name') {
+        tabNameBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-white bg-indigo-600 shadow-sm transition flex items-center space-x-1.5";
+        tabUrlBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center space-x-1.5";
+        panelNameSearch.classList.remove('hidden');
+        panelDirectUrl.classList.add('hidden');
+      } else {
+        tabUrlBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-white bg-indigo-600 shadow-sm transition flex items-center space-x-1.5";
+        tabNameBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center space-x-1.5";
+        panelDirectUrl.classList.remove('hidden');
+        panelNameSearch.classList.add('hidden');
+      }
+    }
+
+    tabNameBtn.addEventListener('click', () => setTab('name'));
+    tabUrlBtn.addEventListener('click', () => setTab('url'));
+
+    // Fast Prefills
+    if (btnPrefillModi) {
+      btnPrefillModi.addEventListener('click', () => {
+        setTab('name');
+        candidateNameInput.value = 'Narendra Modi';
+        candidateContextInput.value = 'Prime Minister of India';
+        btnSearchCandidates.click();
+      });
+    }
+
+    if (btnPrefillMouchawar) {
+      btnPrefillMouchawar.addEventListener('click', () => {
+        setTab('name');
+        candidateNameInput.value = 'Ronaldo Mouchawar';
+        candidateContextInput.value = 'Amazon MENA Souq';
+        btnSearchCandidates.click();
+      });
+    }
+
+    // Candidate Search (Upstream Human Gate 1)
+    candidateSearchForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = candidateNameInput.value.trim();
+      const context = candidateContextInput.value.trim();
+      if (!name) return;
+
+      btnSearchCandidates.disabled = true;
+      btnSearchCandidates.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i><span>Searching...</span>';
+      candidateConfirmationArea.classList.add('hidden');
+      candidateCardsContainer.innerHTML = '';
+
+      try {
+        const resp = await fetch('/api/search/candidates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, context_keywords: context, max_candidates: 4 })
+        });
+
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail || 'Candidate search failed');
+
+        renderCandidateGate(data.candidates || []);
+      } catch (err) {
+        alert('Candidate Search Error: ' + err.message);
+      } finally {
+        btnSearchCandidates.disabled = false;
+        btnSearchCandidates.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i><span>Find Profiles</span>';
+      }
     });
 
-    // Run Pipeline
+    // Render Upstream Candidate Confirmation Cards
+    function renderCandidateGate(candidates) {
+      candidateCardsContainer.innerHTML = '';
+      if (candidates.length === 0) {
+        candidateCardsContainer.innerHTML = '<div class="col-span-2 p-4 text-xs text-amber-300 bg-amber-950/20 border border-amber-500/30 rounded-xl">No public profile matches found. Try entering additional keywords or switch to Direct LinkedIn URL.</div>';
+        candidateConfirmationArea.classList.remove('hidden');
+        return;
+      }
+
+      candidates.forEach((cand) => {
+        const initials = cand.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        const card = document.createElement('div');
+        card.className = "p-4 rounded-xl bg-slate-900 border border-slate-700 hover:border-indigo-500/70 transition space-y-3 shadow-lg flex flex-col justify-between";
+
+        const locBadge = cand.location ? `<span class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>${escapeHtml(cand.location)}</span>` : '';
+        const compBadge = cand.company ? `<span class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-building mr-1 text-slate-400"></i>${escapeHtml(cand.company)}</span>` : '';
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start space-x-3">
+              <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center font-bold text-white text-xs shrink-0 shadow">
+                ${initials}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-sm font-bold text-white truncate">${escapeHtml(cand.full_name)}</h4>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Match ${((cand.match_confidence || cand.relevance_score || 0.95) * 100).toFixed(0)}%</span>
+                </div>
+                <p class="text-xs text-slate-300 line-clamp-2 mt-0.5">${escapeHtml(cand.headline || 'Executive Profile')}</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mt-2.5">
+              ${locBadge}
+              ${compBadge}
+              <a href="${cand.linkedin_url}" target="_blank" class="px-2 py-0.5 rounded text-[11px] text-indigo-400 hover:underline border border-indigo-500/20 truncate max-w-[200px]">
+                <i class="fa-brands fa-linkedin mr-1"></i>${escapeHtml(cand.linkedin_url.split('/in/')[1] || 'profile')}
+              </a>
+            </div>
+          </div>
+          <button 
+            type="button" 
+            class="btn-confirm-candidate w-full py-2 px-3 mt-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-emerald-600/20 transition flex items-center justify-center space-x-1.5"
+            data-url="${escapeHtml(cand.linkedin_url)}"
+            data-name="${escapeHtml(cand.full_name)}"
+            data-headline="${escapeHtml(cand.headline || '')}"
+            data-location="${escapeHtml(cand.location || '')}"
+            data-company="${escapeHtml(cand.company || '')}"
+            data-role="${escapeHtml(cand.role || '')}"
+          >
+            <i class="fa-solid fa-check"></i>
+            <span>Confirm & Launch Deep Intelligence</span>
+          </button>
+        `;
+        candidateCardsContainer.appendChild(card);
+      });
+
+      // Bind confirm buttons
+      candidateCardsContainer.querySelectorAll('.btn-confirm-candidate').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const payload = {
+            linkedin_url: btn.getAttribute('data-url'),
+            candidate_name: btn.getAttribute('data-name'),
+            candidate_headline: btn.getAttribute('data-headline'),
+            candidate_location: btn.getAttribute('data-location'),
+            candidate_company: btn.getAttribute('data-company'),
+            candidate_role: btn.getAttribute('data-role')
+          };
+          console.log("Candidate confirmed by advisor:", payload);
+          launchPipeline(payload);
+        });
+      });
+
+      candidateConfirmationArea.classList.remove('hidden');
+      candidateConfirmationArea.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Direct URL Form Execution
     researchForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const url = linkedinInput.value.trim();
       if (!url) return;
+      launchPipeline({ linkedin_url: url });
+    });
 
-      submitBtn.disabled = true;
+    // Unified Pipeline Launcher
+    async function launchPipeline(payload) {
+      console.log("Starting launchPipeline with payload:", payload);
+      if (submitBtn) submitBtn.disabled = true;
       pipelineStatus.classList.remove('hidden');
       humanGateSection.classList.add('hidden');
       diagnosticSection.classList.add('hidden');
 
       // Animate progress steps
-      animatePipelineStep(1, "Parsing canonical profile & resolving registry anchors...");
-      setTimeout(() => animatePipelineStep(2, "Executing live OSINT search across news, corporate filings & ADGM/DIFC..."), 1200);
+      animatePipelineStep(1, `Ingesting canonical profile for ${payload.candidate_name || payload.linkedin_url}...`);
+      setTimeout(() => animatePipelineStep(2, "Executing live OSINT discovery across sovereign portals & corporate filings..."), 1200);
       setTimeout(() => animatePipelineStep(3, "Extracting atomic claims & running Check 1 & Check 2 double-checks..."), 3000);
 
       try {
         const resp = await fetch('/api/research', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ linkedin_url: url })
+          body: JSON.stringify(payload)
         });
 
         const data = await resp.json();
+        console.log("Received /api/research response, status:", resp.status, data);
         if (!resp.ok) {
           throw new Error(data.detail || "Pipeline failed");
         }
 
-        animatePipelineStep(4, "Synthesizing 3 Strategic Presence Gaps via Groq LLaMA 3.3...");
+        animatePipelineStep(4, "Synthesizing 3 Strategic Presence Gaps via Groq / NVIDIA Engine...");
         pipelineStatus.classList.add('hidden');
-        submitBtn.disabled = false;
+        if (submitBtn) submitBtn.disabled = false;
         currentProspectId = data.prospect_id;
         currentPipelineData = data;
         renderHumanGate(data);
 
       } catch (err) {
+        console.error("Pipeline Error:", err);
         alert("Pipeline Error: " + err.message);
         pipelineStatus.classList.add('hidden');
-        submitBtn.disabled = false;
+        if (submitBtn) submitBtn.disabled = false;
       }
-    });
+    }
 
     function animatePipelineStep(stepNum, text) {
       statusHeadline.textContent = text;
@@ -416,6 +663,17 @@
 
       const container = document.getElementById('claims-container');
       container.innerHTML = '';
+
+      if (claims.length === 0) {
+        const emptyCard = document.createElement('div');
+        emptyCard.className = "p-6 rounded-xl bg-slate-900/90 border border-slate-800 text-center space-y-2";
+        emptyCard.innerHTML = `
+          <p class="text-sm font-medium text-slate-300">No verifiable atomic assertions extracted from current sources.</p>
+          <p class="text-xs text-slate-500">You may proceed to compile the diagnostic briefing directly or launch a targeted search.</p>
+        `;
+        container.appendChild(emptyCard);
+        return;
+      }
 
       claims.forEach((claim, idx) => {
         const card = document.createElement('div');
@@ -536,19 +794,27 @@
 
       const prospect = data.prospect;
       document.getElementById('diag-prospect-name').textContent = `Executive Briefing: ${prospect.full_name}`;
-      document.getElementById('diag-prospect-role').textContent = `${prospect.primary_role || 'Senior Leader'} | ${prospect.current_company || 'UAE Tech Ecosystem'} | ${prospect.location_country}`;
+      document.getElementById('diag-prospect-role').textContent = `${prospect.primary_role || 'Senior Leader'} | ${prospect.current_company || 'Enterprise Leader'}`;
+      const sectorEl = document.getElementById('diag-prospect-sector');
+      if (sectorEl) sectorEl.textContent = prospect.sector || 'Enterprise Sector';
+      const locEl = document.getElementById('diag-prospect-location');
+      if (locEl) locEl.textContent = prospect.location_country || 'Global';
 
       // 1. Table
       const tbody = document.getElementById('dossier-table-body');
       tbody.innerHTML = '';
       const verifiedClaims = data.claims.filter(c => c.status === 'VERIFIED');
       const partialClaims = data.claims.filter(c => c.status === 'PARTIALLY_VERIFIED');
+      const displayClaims = [...verifiedClaims, ...partialClaims];
+      const itemsToRender = displayClaims.length > 0 ? displayClaims : data.claims;
 
-      [...verifiedClaims, ...partialClaims].forEach(c => {
+      itemsToRender.forEach(c => {
         const tr = document.createElement('tr');
         const badge = c.status === 'VERIFIED' ? 
           `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-400">VERIFIED</span>` :
-          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500/20 text-amber-400">PARTIAL</span>`;
+          (c.status === 'PARTIALLY_VERIFIED' ?
+          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500/20 text-amber-400">PARTIAL</span>` :
+          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-400">QUARANTINED</span>`);
 
         const src = c.primary_source_url ? `<a href="${c.primary_source_url}" target="_blank" class="text-indigo-400 hover:underline">${c.primary_source_url.slice(0, 30)}...</a>` : 'Corporate Press';
         const corrob = c.secondary_source_url ? `<a href="${c.secondary_source_url}" target="_blank" class="text-cyan-400 hover:underline">${c.secondary_source_url.slice(0, 25)}...</a>` : 'Confirmed by Registry';

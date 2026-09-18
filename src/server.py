@@ -32,11 +32,24 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # Shared database & orchestrator
 db = Database()
+from src.discovery.candidate_search import CandidateSearchEngine
+from src.storage.models import CandidateMatch
+
 orchestrator = Orchestrator(db)
 
 # Request / Response Schemas
+class CandidateSearchRequest(BaseModel):
+    name: str
+    context_keywords: Optional[str] = None
+    max_candidates: Optional[int] = 5
+
 class ResearchRequest(BaseModel):
     linkedin_url: str
+    candidate_name: Optional[str] = None
+    candidate_headline: Optional[str] = None
+    candidate_location: Optional[str] = None
+    candidate_company: Optional[str] = None
+    candidate_role: Optional[str] = None
 
 class ClaimOverrideRequest(BaseModel):
     status: str
@@ -60,6 +73,31 @@ async def health_check():
         "track": "Track B: Public OSINT & Double-Checked Verification"
     }
 
+# --- Candidate Search (US1: Upstream Confirmation Gate) ---
+@app.post("/api/search/candidates")
+async def search_candidates(req: CandidateSearchRequest):
+    """
+    User Story 1: Upstream Human Candidate Confirmation Gate.
+    Searches public web records for candidate profiles matching the provided name
+    and optional context keywords, returning candidate match cards for advisor selection.
+    """
+    name = req.name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Name cannot be empty")
+
+    engine = CandidateSearchEngine()
+    candidates = await engine.search_candidates(
+        name=name,
+        context_keywords=req.context_keywords,
+        max_candidates=req.max_candidates or 5
+    )
+    return {
+        "success": True,
+        "query_name": name,
+        "total_matches": len(candidates),
+        "candidates": [c.model_dump(mode="json") for c in candidates]
+    }
+
 # --- Pipeline Execution ---
 @app.post("/api/research")
 async def execute_research_pipeline(req: ResearchRequest):
@@ -80,7 +118,14 @@ async def execute_research_pipeline(req: ResearchRequest):
         )
 
     try:
-        result = await orchestrator.execute_research(url)
+        result = await orchestrator.execute_research(
+            linkedin_url=url,
+            candidate_name=req.candidate_name,
+            candidate_headline=req.candidate_headline,
+            candidate_location=req.candidate_location,
+            candidate_company=req.candidate_company,
+            candidate_role=req.candidate_role
+        )
         return {
             "success": True,
             "prospect_id": str(result["prospect"].prospect_id),

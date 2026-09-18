@@ -37,11 +37,16 @@ class Database:
             current_company TEXT,
             primary_role TEXT,
             location_country TEXT DEFAULT 'UAE',
+            sector TEXT DEFAULT 'Executive Leadership',
             status TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """)
+        try:
+            cur.execute("ALTER TABLE prospects ADD COLUMN sector TEXT DEFAULT 'Executive Leadership'")
+        except Exception:
+            pass
         cur.execute("""
         CREATE TABLE IF NOT EXISTS evidence_sources (
             source_id TEXT PRIMARY KEY,
@@ -110,9 +115,9 @@ class Database:
     def save_prospect(self, p: Prospect):
         conn = self.get_connection()
         conn.execute("""
-        INSERT OR REPLACE INTO prospects (prospect_id, linkedin_url, slug, full_name, current_company, primary_role, location_country, status, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-        """, (str(p.prospect_id), p.linkedin_url, p.slug, p.full_name, p.current_company, p.primary_role, p.location_country, p.status.value))
+        INSERT OR REPLACE INTO prospects (prospect_id, linkedin_url, slug, full_name, current_company, primary_role, location_country, sector, status, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        """, (str(p.prospect_id), p.linkedin_url, p.slug, p.full_name, p.current_company, p.primary_role, p.location_country, getattr(p, "sector", "Executive Leadership"), p.status.value))
         conn.commit()
 
     def save_sources(self, sources: List[EvidenceSource]):

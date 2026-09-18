@@ -1,7 +1,16 @@
 import json
 import logging
 import re
+import platform
 from typing import List, Dict, Any, Optional
+
+# Prevent Windows WMI query hang/leak (0x8007000e) during SDK client header generation
+try:
+    platform.platform = lambda *args, **kwargs: "Windows-10"
+    platform.processor = lambda *args, **kwargs: "Intel64"
+except Exception:
+    pass
+
 from groq import Groq
 from openai import OpenAI
 

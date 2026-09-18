@@ -72,3 +72,44 @@ def test_full_pipeline_and_human_gate_flow():
     json_data = json_resp.json()
     assert json_data["prospect"]["slug"] == "ronaldo-mouchawar-souq"
     assert len(json_data["claims"]) > 0
+
+def test_candidate_search_endpoint():
+    response = client.post(
+        "/api/search/candidates",
+        json={"name": "Narendra Modi", "context_keywords": "Prime Minister of India"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["query_name"] == "Narendra Modi"
+    assert len(data["candidates"]) > 0
+    candidate = data["candidates"][0]
+    assert "Modi" in candidate["full_name"]
+    assert "linkedin.com/in/" in candidate["linkedin_url"]
+
+def test_candidate_search_empty_name():
+    response = client.post("/api/search/candidates", json={"name": "  "})
+    assert response.status_code == 400
+    assert "cannot be empty" in response.json()["detail"]
+
+def test_pipeline_with_candidate_metadata():
+    payload = {
+        "linkedin_url": "https://www.linkedin.com/in/narendramodi",
+        "candidate_name": "Narendra Modi",
+        "candidate_headline": "Prime Minister of India",
+        "candidate_location": "New Delhi, India"
+    }
+    response = client.post("/api/research", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    prospect = data["prospect"]
+    assert prospect["full_name"] == "Narendra Modi"
+    assert prospect["location_country"] == "India"
+    assert prospect["sector"] == "Public Governance & Sovereign Affairs"
+    assert len(data["gaps"]) == 3
+    # Check that gaps and diagnostic are contextualized to India / Public Governance
+    md_resp = client.get(f"/api/prospects/{prospect['prospect_id']}/diagnostic/markdown")
+    assert md_resp.status_code == 200
+    assert "India" in md_resp.text
+    assert "Public Governance" in md_resp.text

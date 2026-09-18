@@ -37,7 +37,9 @@ class DoubleChecker:
 
             prompt = (
                 "You are an adversarial fact verification auditor. "
-                "Determine if the Source Passage strictly entails the Claim.\n\n"
+                "Determine if the Source Passage strictly entails the Claim.\n"
+                "Note: Treat standard date formats (e.g. '26 May 2014' vs 'May 26, 2014'), honorifics (e.g. 'Shri Narendra Modi' vs 'Narendra Modi'), "
+                "and role synonyms ('sworn in as', 'took oath as', 'assumed office as', 'served as') as semantically entailed if they state the same core fact.\n\n"
                 f"Claim: \"{claim.claim_text}\"\n"
                 f"Source URL: {src.url}\n"
                 f"Source Snippet: {snippet[:2000]}\n\n"
