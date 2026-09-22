@@ -60,7 +60,7 @@ class ApproveRequest(BaseModel):
     reviewer_notes: Optional[str] = "Approved at Sovereign Human Gate"
 
 # --- Web UI Endpoint ---
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def get_dashboard(request: Request):
     """Serves the Growpido Executive Intelligence Dashboard UI."""
     return templates.TemplateResponse(request, "index.html")
