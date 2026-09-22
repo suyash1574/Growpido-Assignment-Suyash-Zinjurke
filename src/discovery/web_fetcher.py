@@ -5,12 +5,12 @@ from typing import Optional, Dict, Any
 from bs4 import BeautifulSoup
 
 class WebFetcher:
-    def __init__(self, timeout_seconds: float = 6.0, user_agent: str = "Growpido-Intelligence-Engine/1.0 (OSINT Research; Passive-Index)"):
+    def __init__(self, timeout_seconds: float = 8.0, user_agent: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"):
         self.timeout = timeout_seconds
         self.headers = {
             "User-Agent": user_agent,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Language": "en-US,en;q=0.9",
         }
 
     async def fetch_and_clean(self, url: str) -> Dict[str, Any]:

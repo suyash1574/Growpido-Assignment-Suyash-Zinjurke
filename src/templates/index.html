@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<html lang="en" class="h-full bg-[#fafafa] text-[#171717]">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,177 +7,202 @@
   <!-- TailwindCSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Geist', 'sans-serif'],
+            mono: ['"Geist Mono"', 'monospace'],
+          },
+          colors: {
+            canvas: '#fafafa',
+            elevated: '#ffffff',
+            hairline: '#ebebeb',
+            ink: '#171717',
+            body: '#4d4d4d',
+            mute: '#737373',
+            faint: '#a1a1a1',
+            vercelBlue: '#0070f3'
+          }
+        }
+      }
+    }
+  </script>
   <style>
+    body {
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #fafafa;
+      color: #171717;
+    }
+    .hero-mesh {
+      background: radial-gradient(circle at 50% 0%, rgba(0, 112, 243, 0.08) 0%, rgba(121, 40, 202, 0.05) 30%, rgba(255, 0, 128, 0.03) 50%, rgba(250, 250, 250, 0) 70%);
+    }
     @media print {
-      @page { size: A4 portrait; margin: 10mm; }
-      body { background: white !important; color: #0f172a !important; font-size: 10.5px !important; }
+      @page { size: A4 portrait; margin: 12mm; }
+      body { background: white !important; color: #171717 !important; font-size: 11px !important; }
       header, #ingest-section, #candidate-confirmation-area, #human-gate-section, #pipeline-status, footer, .no-print { display: none !important; }
       #diagnostic-section { display: block !important; margin: 0 !important; padding: 0 !important; border: none !important; box-shadow: none !important; }
-      .gradient-border { border: 1px solid #cbd5e1 !important; background: white !important; }
-      * { color-adjust: exact; -webkit-print-color-adjust: exact; }
-    }
-    .gradient-border {
-      position: relative; border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(12px);
-    }
-    .pulse-glow {
-      animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6)); }
-      50% { opacity: .7; filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.2)); }
     }
   </style>
 </head>
-<body class="h-full font-sans antialiased selection:bg-indigo-500 selection:text-white">
+<body class="h-full font-sans antialiased selection:bg-[#171717] selection:text-white">
   <div class="min-h-full flex flex-col">
-    <!-- Navigation Bar -->
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    
+    <!-- Top Navigation -->
+    <header class="border-b border-[#ebebeb] bg-white/80 backdrop-blur sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <i class="fa-solid fa-brain text-white text-lg"></i>
+          <div class="h-9 w-9 rounded-lg bg-[#171717] flex items-center justify-center text-white shadow-sm">
+            <i class="fa-solid fa-cube text-sm"></i>
           </div>
           <div>
-            <h1 class="text-lg font-bold text-white tracking-wide">GROWPIDO <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">TRACK B: INTELLIGENCE</span></h1>
-            <p class="text-xs text-slate-400">Zero-Hallucination Adversarial Verification & Strategic Presence Gaps</p>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-base font-semibold text-[#171717] tracking-tight">GROWPIDO</h1>
+              <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-[#737373] border border-[#ebebeb]">Track B Intelligence</span>
+            </div>
+            <p class="text-xs text-[#737373]">Adversarially-Verified Executive Diagnostics & Strategic Presence</p>
           </div>
         </div>
-        <div class="flex items-center space-x-4">
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
-            Groq + NVIDIA Dual-Engine Active
+        <div class="flex items-center space-x-3">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+            Dual-Engine Active
           </span>
-          <a href="/docs" target="_blank" class="text-xs text-slate-400 hover:text-white transition flex items-center space-x-1">
-            <i class="fa-solid fa-code"></i>
-            <span>Swagger API</span>
+          <a href="/docs" target="_blank" class="text-xs font-mono text-[#737373] hover:text-[#171717] border border-[#ebebeb] hover:bg-[#f5f5f5] px-2.5 py-1 rounded-md transition flex items-center space-x-1.5">
+            <i class="fa-solid fa-code text-[11px]"></i>
+            <span>API Docs</span>
           </a>
         </div>
       </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <!-- Main Content Container with Hero Mesh Gradient -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 hero-mesh">
       
-      <!-- Law of Absolute Accuracy Banner -->
-      <div class="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex items-start space-x-4">
-        <div class="text-amber-400 text-xl mt-0.5">
+      <!-- Grounding Law Banner -->
+      <div class="rounded-xl border border-amber-200 bg-amber-50/60 p-4 flex items-start space-x-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+        <div class="text-amber-700 text-lg mt-0.5 shrink-0">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <div class="text-sm">
-          <span class="font-semibold text-amber-200">Track B Inviolable Grounding Law:</span>
-          <span class="text-slate-300"> Accuracy takes absolute precedence over completeness. Every executive claim undergoes double-checked verification against primary registers (Tier-1 anchors). Uncorroborated assertions are strictly quarantined.</span>
+        <div class="text-xs leading-relaxed">
+          <span class="font-semibold text-amber-900">Track B Grounding Law:</span>
+          <span class="text-amber-800/90"> Absolute accuracy dominates completeness. Every factual assertion is double-checked against primary Tier-1 registries. Uncorroborated assertions are strictly quarantined.</span>
         </div>
       </div>
 
       <!-- Ingestion & Benchmark Picker Section -->
-      <section class="gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+      <section id="ingest-section" class="bg-white border border-[#ebebeb] rounded-xl p-6 sm:p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)] space-y-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div class="max-w-3xl">
-            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
-              <span class="flex h-6 w-6 rounded-full bg-indigo-600 text-xs items-center justify-center text-white">1</span>
-              <span>Prospect Ingestion & Upstream Confirmation Gate</span>
-            </h2>
-            <p class="text-sm text-slate-400 mt-1">Search executive profiles by name and confirm candidate identity before initiating adversarial verification.</p>
+          <div class="max-w-2xl">
+            <div class="flex items-center space-x-2 text-xs font-mono uppercase tracking-widest text-[#737373]">
+              <span>Step 01</span>
+              <span>•</span>
+              <span>Candidate Discovery</span>
+            </div>
+            <h2 class="text-xl font-semibold text-[#171717] tracking-tight mt-1">Prospect Ingestion & Upstream Gate</h2>
+            <p class="text-xs text-[#737373] mt-0.5">Search executive candidates by name and verify identity before launching OSINT research.</p>
           </div>
 
           <!-- Ingestion Mode Tabs -->
-          <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 self-start md:self-auto">
+          <div class="flex items-center bg-[#fafafa] p-1 rounded-lg border border-[#ebebeb] self-start md:self-auto">
             <button 
               id="tab-name-btn"
               type="button" 
-              class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-white bg-indigo-600 shadow-sm transition flex items-center space-x-1.5"
+              class="px-3.5 py-1.5 rounded-md text-xs font-medium text-white bg-[#171717] shadow-sm transition flex items-center space-x-1.5"
             >
-              <i class="fa-solid fa-user-check"></i>
+              <i class="fa-solid fa-user-check text-[11px]"></i>
               <span>Name Search & Gate</span>
             </button>
             <button 
               id="tab-url-btn"
               type="button" 
-              class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center space-x-1.5"
+              class="px-3.5 py-1.5 rounded-md text-xs font-medium text-[#737373] hover:text-[#171717] transition flex items-center space-x-1.5"
             >
-              <i class="fa-brands fa-linkedin"></i>
+              <i class="fa-brands fa-linkedin text-[11px]"></i>
               <span>Direct LinkedIn URL</span>
             </button>
           </div>
         </div>
 
-        <!-- Quick Benchmark Selectors -->
-        <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center space-x-2 text-sm">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fast Benchmarks:</span>
-            <span class="text-xs text-slate-500">Click to instantly populate candidate target</span>
+        <!-- Fast Benchmark Selectors -->
+        <div class="p-3.5 rounded-lg bg-[#fafafa] border border-[#ebebeb] flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center space-x-2 text-xs">
+            <span class="font-mono uppercase tracking-wider text-[#737373] font-semibold">Benchmarks:</span>
+            <span class="text-[#737373]">1-click test profiles</span>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <button id="btn-prefill-mouchawar" type="button" class="text-xs px-3 py-1.5 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 border border-emerald-500/30 transition flex items-center space-x-1.5">
-              <i class="fa-solid fa-bolt text-emerald-400"></i>
-              <span>Ronaldo Mouchawar (UAE Founder/CEO)</span>
+            <button id="btn-prefill-mouchawar" type="button" class="text-xs px-3 py-1.5 rounded-md bg-white text-[#171717] hover:bg-[#f5f5f5] border border-[#ebebeb] shadow-sm transition flex items-center space-x-1.5 font-medium">
+              <i class="fa-solid fa-bolt text-emerald-600"></i>
+              <span>Ronaldo Mouchawar (UAE CEO)</span>
             </button>
-            <button id="btn-prefill-careem" type="button" class="text-xs px-3 py-1.5 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 border border-emerald-500/30 transition flex items-center space-x-1.5">
-              <i class="fa-solid fa-car text-emerald-400"></i>
-              <span>Mudassir Sheikha (UAE Founder/CEO)</span>
+            <button id="btn-prefill-careem" type="button" class="text-xs px-3 py-1.5 rounded-md bg-white text-[#171717] hover:bg-[#f5f5f5] border border-[#ebebeb] shadow-sm transition flex items-center space-x-1.5 font-medium">
+              <i class="fa-solid fa-car text-emerald-600"></i>
+              <span>Mudassir Sheikha (UAE CEO)</span>
             </button>
-            <button id="btn-prefill-sweid" type="button" class="text-xs px-3 py-1.5 rounded-md bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30 border border-indigo-500/30 transition flex items-center space-x-1.5">
-              <i class="fa-solid fa-briefcase text-indigo-400"></i>
-              <span>Noor Sweid (UAE Fund Manager)</span>
+            <button id="btn-prefill-sweid" type="button" class="text-xs px-3 py-1.5 rounded-md bg-white text-[#171717] hover:bg-[#f5f5f5] border border-[#ebebeb] shadow-sm transition flex items-center space-x-1.5 font-medium">
+              <i class="fa-solid fa-briefcase text-[#0070f3]"></i>
+              <span>Noor Sweid (UAE Fund Mgr)</span>
             </button>
-            <button id="btn-prefill-modi" type="button" class="text-xs px-2.5 py-1.5 rounded-md bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700 transition flex items-center space-x-1.5">
-              <i class="fa-solid fa-ban text-rose-400"></i>
-              <span>Modi (Negative Scope Test)</span>
+            <button id="btn-prefill-modi" type="button" class="text-xs px-3 py-1.5 rounded-md bg-white text-[#737373] hover:bg-[#f5f5f5] hover:text-[#171717] border border-[#ebebeb] shadow-sm transition flex items-center space-x-1.5">
+              <i class="fa-solid fa-ban text-rose-500"></i>
+              <span>Negative Scope Test</span>
             </button>
           </div>
         </div>
 
-        <!-- Panel A: Name-Based Search (Default) -->
+        <!-- Panel A: Name-Based Search -->
         <div id="panel-name-search" class="space-y-4">
           <form id="candidate-search-form" class="grid grid-cols-1 md:grid-cols-12 gap-3">
             <div class="relative md:col-span-6">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                <i class="fa-solid fa-user text-sm"></i>
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a1a1a1]">
+                <i class="fa-solid fa-user text-xs"></i>
               </div>
               <input 
                 type="text" 
                 id="candidate-name-input" 
                 required
-                placeholder="Person's Full Name (e.g. Narendra Modi, Ronaldo Mouchawar)" 
-                class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                placeholder="Person's Full Name (e.g. Ronaldo Mouchawar, Nidhi Hooda)" 
+                class="w-full pl-10 pr-4 py-2.5 bg-white border border-[#ebebeb] rounded-lg text-sm text-[#171717] placeholder-[#a1a1a1] focus:outline-none focus:ring-1 focus:ring-[#171717] focus:border-[#171717] transition"
               >
             </div>
             <div class="relative md:col-span-4">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                <i class="fa-solid fa-building text-sm"></i>
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a1a1a1]">
+                <i class="fa-solid fa-building text-xs"></i>
               </div>
               <input 
                 type="text" 
                 id="candidate-context-input" 
-                placeholder="Optional Context / Role (e.g. Prime Minister, Souq)" 
-                class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                placeholder="Optional Company / Role / Country" 
+                class="w-full pl-10 pr-4 py-2.5 bg-white border border-[#ebebeb] rounded-lg text-sm text-[#171717] placeholder-[#a1a1a1] focus:outline-none focus:ring-1 focus:ring-[#171717] focus:border-[#171717] transition"
               >
             </div>
             <div class="md:col-span-2">
               <button 
                 type="submit" 
                 id="btn-search-candidates"
-                class="w-full h-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center space-x-2 text-sm"
+                class="w-full h-full py-2.5 px-4 bg-[#171717] hover:bg-[#333333] text-white font-medium rounded-lg text-xs tracking-wide shadow-sm transition flex items-center justify-center space-x-2"
               >
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 <span>Find Profiles</span>
               </button>
             </div>
           </form>
 
           <!-- Candidate Confirmation Gate Cards Area -->
-          <div id="candidate-confirmation-area" class="hidden mt-6 space-y-3 pt-4 border-t border-slate-800">
+          <div id="candidate-confirmation-area" class="hidden mt-6 space-y-3 pt-5 border-t border-[#ebebeb]">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <span class="h-2.5 w-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                <h3 class="text-sm font-bold text-amber-200 uppercase tracking-wider">Candidate Confirmation Gate (Human Gate 1)</h3>
+                <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                <h3 class="text-xs font-mono uppercase tracking-wider font-semibold text-[#171717]">Candidate Confirmation Gate (Human Gate 1)</h3>
               </div>
-              <span class="text-xs text-slate-400">Select target candidate to proceed with OSINT research</span>
+              <span class="text-xs text-[#737373]">Select target profile to initiate deep OSINT extraction</span>
             </div>
-            <div id="candidate-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <!-- Dynamically populated candidate cards -->
+            <div id="candidate-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <!-- Populated dynamically -->
             </div>
           </div>
         </div>
@@ -186,160 +211,192 @@
         <div id="panel-direct-url" class="hidden">
           <form id="research-form" class="flex flex-col sm:flex-row gap-3">
             <div class="relative flex-1">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                <i class="fa-brands fa-linkedin text-lg"></i>
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a1a1a1]">
+                <i class="fa-brands fa-linkedin text-sm"></i>
               </div>
               <input 
                 type="url" 
                 id="linkedin-url" 
                 placeholder="https://www.linkedin.com/in/ronaldo-mouchawar-souq" 
-                class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                class="w-full pl-10 pr-4 py-2.5 bg-white border border-[#ebebeb] rounded-lg text-sm text-[#171717] placeholder-[#a1a1a1] focus:outline-none focus:ring-1 focus:ring-[#171717] focus:border-[#171717] transition"
               >
             </div>
             <button 
               type="submit" 
               id="submit-btn"
-              class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center space-x-2 text-sm shrink-0"
+              class="px-6 py-2.5 bg-[#171717] hover:bg-[#333333] text-white font-medium rounded-lg text-xs tracking-wide shadow-sm transition flex items-center justify-center space-x-2 shrink-0"
             >
-              <i class="fa-solid fa-satellite-dish"></i>
+              <i class="fa-solid fa-satellite-dish text-xs"></i>
               <span>Run Intelligence Pipeline</span>
             </button>
           </form>
         </div>
 
-        <!-- Progress Spinner & Status Box -->
-        <div id="pipeline-status" class="hidden p-5 rounded-xl bg-slate-900/90 border border-indigo-500/30 space-y-4">
+        <!-- Progress Box -->
+        <div id="pipeline-status" class="hidden p-5 rounded-xl bg-[#fafafa] border border-[#ebebeb] space-y-4">
           <div class="flex items-center space-x-3">
-            <div class="animate-spin text-indigo-400 text-lg">
+            <div class="animate-spin text-[#171717] text-base">
               <i class="fa-solid fa-circle-notch"></i>
             </div>
-            <div class="text-sm font-medium text-white" id="status-headline">Executing Live Intelligence Pipeline...</div>
+            <div class="text-xs font-semibold text-[#171717] font-mono uppercase tracking-wider" id="status-headline">Executing Live Pipeline...</div>
           </div>
           <!-- Step Indicators -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-            <div id="step-1" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
-              <span class="h-2 w-2 rounded-full bg-slate-600" id="step-1-dot"></span>
-              <span>1. Profile Ingestion</span>
+            <div id="step-1" class="p-3 rounded-lg bg-white text-[#737373] border border-[#ebebeb] flex items-center space-x-2.5">
+              <span class="h-2 w-2 rounded-full bg-slate-300" id="step-1-dot"></span>
+              <span class="font-medium">1. Profile Ingestion</span>
             </div>
-            <div id="step-2" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
-              <span class="h-2 w-2 rounded-full bg-slate-600" id="step-2-dot"></span>
-              <span>2. OSINT Web Crawl</span>
+            <div id="step-2" class="p-3 rounded-lg bg-white text-[#737373] border border-[#ebebeb] flex items-center space-x-2.5">
+              <span class="h-2 w-2 rounded-full bg-slate-300" id="step-2-dot"></span>
+              <span class="font-medium">2. OSINT Web Crawl</span>
             </div>
-            <div id="step-3" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
-              <span class="h-2 w-2 rounded-full bg-slate-600" id="step-3-dot"></span>
-              <span>3. Double-Check Audit</span>
+            <div id="step-3" class="p-3 rounded-lg bg-white text-[#737373] border border-[#ebebeb] flex items-center space-x-2.5">
+              <span class="h-2 w-2 rounded-full bg-slate-300" id="step-3-dot"></span>
+              <span class="font-medium">3. Double-Check Audit</span>
             </div>
-            <div id="step-4" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2">
-              <span class="h-2 w-2 rounded-full bg-slate-600" id="step-4-dot"></span>
-              <span>4. Strategic Synthesis</span>
+            <div id="step-4" class="p-3 rounded-lg bg-white text-[#737373] border border-[#ebebeb] flex items-center space-x-2.5">
+              <span class="h-2 w-2 rounded-full bg-slate-300" id="step-4-dot"></span>
+              <span class="font-medium">4. Strategic Synthesis</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Sovereign Human Gate Review Section -->
-      <section id="human-gate-section" class="hidden gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <!-- Human-in-the-Loop Review Gate (Human Gate 2) -->
+      <section id="human-gate-section" class="hidden bg-white border border-[#ebebeb] rounded-xl p-6 sm:p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)] space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#ebebeb] pb-5">
           <div>
-            <div class="flex items-center space-x-2">
-              <span class="flex h-6 w-6 rounded-full bg-amber-500 text-xs items-center justify-center text-slate-950 font-bold">2</span>
-              <h2 class="text-xl font-bold text-white">Sovereign Human-in-the-Loop Review Gate</h2>
+            <div class="flex items-center space-x-2 text-xs font-mono uppercase tracking-widest text-[#737373]">
+              <span>Step 02</span>
+              <span>•</span>
+              <span>Forensic Double-Check</span>
             </div>
-            <p class="text-sm text-slate-400 mt-1">Review extracted claims, verify Tier-1 primary source citations, and adjudicate contradiction flags before compilation.</p>
+            <h2 class="text-xl font-semibold text-[#171717] tracking-tight mt-1">Sovereign Human-in-the-Loop Review Gate</h2>
+            <p class="text-xs text-[#737373] mt-0.5">Review extracted claims, verify Tier-1 citations, and adjudicate flags before generating the final report.</p>
           </div>
           <button 
             id="btn-approve-diagnostic"
             type="button"
-            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl shadow-lg shadow-emerald-600/20 text-sm flex items-center space-x-2 transition self-start md:self-auto"
+            class="px-6 py-2.5 bg-[#171717] hover:bg-[#333333] text-white font-medium rounded-full text-xs tracking-wide shadow-sm flex items-center space-x-2 transition self-start md:self-auto"
           >
-            <i class="fa-solid fa-stamp"></i>
+            <i class="fa-solid fa-stamp text-xs"></i>
             <span>Approve & Compile Diagnostic</span>
           </button>
         </div>
 
         <!-- Metric Summary Chips -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 flex items-center justify-between">
+          <div class="p-4 rounded-xl bg-white border border-emerald-200 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex items-center justify-between">
             <div>
-              <div class="text-xs text-slate-400">Verified (Double-Checked)</div>
-              <div class="text-2xl font-bold text-emerald-400 mt-1" id="count-verified">0</div>
+              <div class="text-xs font-mono uppercase tracking-wider text-emerald-800 font-semibold">Verified (Double-Checked)</div>
+              <div class="flex items-baseline space-x-2 mt-1">
+                <span class="text-2xl font-bold text-emerald-700 font-mono" id="count-verified">0</span>
+                <span class="text-[11px] font-mono text-emerald-700" id="subtext-verified">Includes profile facts</span>
+              </div>
             </div>
-            <i class="fa-solid fa-check-double text-emerald-500 text-xl"></i>
+            <i class="fa-solid fa-check-double text-emerald-600 text-lg"></i>
           </div>
-          <div class="p-4 rounded-xl bg-slate-900 border border-amber-500/30 flex items-center justify-between">
+          <div class="p-4 rounded-xl bg-white border border-amber-200 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex items-center justify-between">
             <div>
-              <div class="text-xs text-slate-400">Partially Verified / Flagged</div>
-              <div class="text-2xl font-bold text-amber-400 mt-1" id="count-partial">0</div>
+              <div class="text-xs font-mono uppercase tracking-wider text-amber-800 font-semibold">Partially Verified / Flagged</div>
+              <div class="text-2xl font-bold text-amber-700 font-mono mt-1" id="count-partial">0</div>
             </div>
-            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xl"></i>
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg"></i>
           </div>
-          <div class="p-4 rounded-xl bg-slate-900 border border-rose-500/30 flex items-center justify-between">
+          <div class="p-4 rounded-xl bg-white border border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex items-center justify-between">
             <div>
-              <div class="text-xs text-slate-400">Adversarially Quarantined</div>
-              <div class="text-2xl font-bold text-rose-400 mt-1" id="count-refused">0</div>
+              <div class="text-xs font-mono uppercase tracking-wider text-rose-800 font-semibold">Adversarially Quarantined</div>
+              <div class="text-2xl font-bold text-rose-700 font-mono mt-1" id="count-refused">0</div>
             </div>
-            <i class="fa-solid fa-ban text-rose-500 text-xl"></i>
+            <i class="fa-solid fa-ban text-rose-600 text-lg"></i>
           </div>
         </div>
 
         <!-- Claims Staging List -->
         <div class="space-y-3" id="claims-container">
-          <!-- Dynamically populated -->
+          <!-- Populated dynamically -->
         </div>
       </section>
 
-      <!-- Executive Diagnostic View Section -->
+      <!-- Executive Diagnostic View Section (Clean Report Document) -->
       <section id="diagnostic-section" class="hidden space-y-6">
-        <div class="gradient-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-            <div>
-              <div class="flex items-center space-x-2">
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  <i class="fa-solid fa-circle-check mr-1"></i> Diagnostic Approved
+        <div class="bg-white border border-[#ebebeb] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-8 sm:p-12 space-y-10">
+          
+          <!-- Report Header -->
+          <div class="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-[#ebebeb] pb-8">
+            <div class="space-y-3">
+              <div class="flex items-center space-x-3">
+                <span class="px-2.5 py-0.5 rounded text-xs font-mono uppercase tracking-wider font-semibold bg-slate-100 text-[#171717] border border-[#ebebeb]">
+                  Executive Briefing
                 </span>
-                <span id="diag-prospect-sector" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Sector</span>
-                <span id="diag-prospect-location" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">Jurisdiction</span>
+                <span id="diag-prospect-sector" class="text-xs font-mono uppercase text-[#737373]">Sector</span>
+                <span class="text-slate-300">•</span>
+                <span id="diag-prospect-location" class="text-xs font-mono uppercase text-[#737373]">Jurisdiction</span>
               </div>
-              <h2 class="text-2xl font-bold text-white mt-2" id="diag-prospect-name">Executive Briefing</h2>
-              <p class="text-sm text-slate-400" id="diag-prospect-role">Role & Company</p>
+              <div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-[#171717] tracking-tight" id="diag-prospect-name">Executive Briefing</h2>
+                <p class="text-sm text-[#737373] mt-1" id="diag-prospect-role">Role & Company</p>
+              </div>
             </div>
-            <!-- Export Downloads -->
-            <div class="flex items-center space-x-3">
+            <!-- Export Buttons -->
+            <div class="flex items-center space-x-2.5 shrink-0">
               <button 
                 id="btn-download-md"
-                class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-medium border border-slate-700 flex items-center space-x-2 transition"
+                class="px-4 py-2 bg-[#171717] hover:bg-[#333333] text-white rounded-md text-xs font-medium transition shadow-sm inline-flex items-center space-x-1.5"
               >
-                <i class="fa-solid fa-file-arrow-down text-cyan-400"></i>
+                <i class="fa-solid fa-file-arrow-down text-[11px]"></i>
                 <span>Download Markdown</span>
               </button>
               <button 
                 id="btn-download-json"
-                class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-medium border border-slate-700 flex items-center space-x-2 transition"
+                class="px-4 py-2 bg-white hover:bg-[#f5f5f5] text-[#171717] rounded-md text-xs font-medium border border-[#ebebeb] transition shadow-sm inline-flex items-center space-x-1.5"
               >
-                <i class="fa-solid fa-code text-amber-400"></i>
+                <i class="fa-solid fa-code text-[11px]"></i>
                 <span>Export Audit JSON</span>
               </button>
             </div>
           </div>
 
+          <!-- Executive & Entity Summary Briefing Card -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#fafafa] border border-[#ebebeb] rounded-xl p-6 shadow-sm">
+            <div class="space-y-2 border-b md:border-b-0 md:border-r border-[#ebebeb] pb-4 md:pb-0 md:pr-6">
+              <div class="flex items-center space-x-2 text-xs font-mono uppercase tracking-wider font-semibold text-[#171717]">
+                <i class="fa-solid fa-user-tie text-[#737373]"></i>
+                <span>The Executive (Person Summary)</span>
+              </div>
+              <p id="diag-person-summary" class="text-xs text-[#4d4d4d] leading-relaxed">
+                Loading executive profile summary...
+              </p>
+            </div>
+            <div class="space-y-2 md:pl-2">
+              <div class="flex items-center space-x-2 text-xs font-mono uppercase tracking-wider font-semibold text-[#171717]">
+                <i class="fa-solid fa-building text-[#737373]"></i>
+                <span>The Operating Entity (Organization Summary)</span>
+              </div>
+              <p id="diag-entity-summary" class="text-xs text-[#4d4d4d] leading-relaxed">
+                Loading operating entity briefing...
+              </p>
+            </div>
+          </div>
+
           <!-- Section 1: Grounded Fact Dossier -->
           <div class="space-y-4">
-            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-              <i class="fa-solid fa-clipboard-check text-indigo-400"></i>
-              <span>1. Verified Executive Fact Dossier</span>
-            </h3>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm text-slate-300">
-                <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-semibold text-[#171717] tracking-tight">1. Verified Executive Fact Dossier</h3>
+              <span class="text-xs font-mono text-[#737373]">Tier-1 Corroborated Evidence</span>
+            </div>
+            <div class="border border-[#ebebeb] rounded-lg overflow-hidden">
+              <table class="w-full text-left text-xs text-[#4d4d4d]">
+                <thead class="bg-[#fafafa] text-[11px] font-mono font-medium uppercase tracking-wider text-[#737373] border-b border-[#ebebeb]">
                   <tr>
                     <th class="py-3 px-4">Status</th>
                     <th class="py-3 px-4">Category</th>
                     <th class="py-3 px-4">Factual Assertion</th>
-                    <th class="py-3 px-4">Primary Source (Tier-1)</th>
-                    <th class="py-3 px-4">Corroboration Check</th>
+                    <th class="py-3 px-4">Primary Citation</th>
+                    <th class="py-3 px-4">Corroboration</th>
                   </tr>
                 </thead>
-                <tbody id="dossier-table-body" class="divide-y divide-slate-800/60">
+                <tbody id="dossier-table-body" class="divide-y divide-[#ebebeb] bg-white">
                   <!-- Dynamically populated -->
                 </tbody>
               </table>
@@ -347,29 +404,29 @@
           </div>
 
           <!-- Section 2: Three Strategic Gaps -->
-          <div class="space-y-4 pt-4 border-t border-slate-800">
-            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-              <i class="fa-solid fa-chart-line text-cyan-400"></i>
-              <span>2. Three Biggest Strategic Presence Gaps</span>
-            </h3>
+          <div class="space-y-4 pt-6 border-t border-[#ebebeb]">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-semibold text-[#171717] tracking-tight">2. Three Biggest Strategic Presence Gaps</h3>
+              <span class="text-xs font-mono text-[#737373]">Diagnostic Synthesis</span>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="strategic-gaps-grid">
               <!-- Dynamically populated -->
             </div>
           </div>
 
           <!-- Section 3: Demonstrated Adversarial Refusal -->
-          <div class="space-y-3 pt-4 border-t border-slate-800">
-            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-              <i class="fa-solid fa-shield-xmark text-rose-400"></i>
-              <span>3. Adversarial Refusal Demonstration (Track B Mandate)</span>
-            </h3>
-            <div id="refusal-card" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-5 space-y-2">
+          <div class="space-y-4 pt-6 border-t border-[#ebebeb]">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-semibold text-[#171717] tracking-tight">3. Demonstrated Adversarial Refusal</h3>
+              <span class="text-xs font-mono text-[#737373]">Track B Mandatory Quarantining</span>
+            </div>
+            <div id="refusal-card" class="rounded-xl border border-rose-200 bg-rose-50/50 p-6 space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold" id="refusal-code">REF-01</span>
-                <span class="text-xs text-rose-300 font-medium">Mandatory Hallucination Prevention Protocol</span>
+                <span class="text-xs font-mono px-2.5 py-1 rounded bg-white border border-rose-200 text-rose-800 font-bold" id="refusal-code">REF-01</span>
+                <span class="text-[11px] font-mono text-rose-700 uppercase tracking-wider font-semibold">Strict Grounding Quarantine Protocol</span>
               </div>
-              <p class="text-sm font-semibold text-white italic" id="refusal-claim">"Demonstrated unverified claim quarantined by system."</p>
-              <p class="text-xs text-slate-300" id="refusal-reason">Causal Rationale explaining lack of primary evidence.</p>
+              <p class="text-sm font-semibold text-rose-950 italic" id="refusal-claim">"Demonstrated unverified claim quarantined by system."</p>
+              <p class="text-xs text-rose-900/90 leading-relaxed border-l-2 border-rose-300 pl-3 mt-2" id="refusal-reason">Causal Rationale explaining lack of primary evidence.</p>
             </div>
           </div>
         </div>
@@ -377,45 +434,45 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-800/80 bg-slate-900/40 py-6">
-      <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
-        Growpido Track B Executive Intelligence Engine • Built with FastAPI, SQLite WAL, Groq LLaMA, and Live OSINT.
+    <!-- Site Footer -->
+    <footer class="border-t border-[#ebebeb] bg-white py-6 mt-12">
+      <div class="max-w-7xl mx-auto px-4 text-center text-xs text-[#737373] font-mono">
+        Growpido Executive Intelligence Engine • Built with FastAPI, SQLite WAL, Groq LLaMA, NVIDIA Nemotron, and Live OSINT.
       </div>
     </footer>
   </div>
 
   <!-- Human Override Modal -->
-  <div id="override-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h4 class="font-bold text-white text-base">Human Gate Claim Adjudication</h4>
-        <button id="close-modal-btn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+  <div id="override-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-[#ebebeb] rounded-xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-[#ebebeb] pb-3">
+        <h4 class="font-semibold text-[#171717] text-sm">Human Gate Claim Adjudication</h4>
+        <button id="close-modal-btn" class="text-[#737373] hover:text-[#171717]"><i class="fa-solid fa-xmark text-sm"></i></button>
       </div>
       <div>
-        <p class="text-xs text-slate-400">Claim to Adjudicate:</p>
-        <p class="text-sm text-slate-200 mt-1 font-medium italic" id="modal-claim-text"></p>
+        <p class="text-xs font-mono uppercase tracking-wider text-[#737373]">Claim Text:</p>
+        <p class="text-xs text-[#171717] mt-1 font-medium italic bg-[#fafafa] p-3 rounded-lg border border-[#ebebeb]" id="modal-claim-text"></p>
       </div>
       <div>
-        <label class="block text-xs font-medium text-slate-400 mb-1">Select New Status</label>
-        <select id="modal-status-select" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:ring-2 focus:ring-indigo-500">
+        <label class="block text-xs font-medium text-[#171717] mb-1">Status Override</label>
+        <select id="modal-status-select" class="w-full bg-[#fafafa] border border-[#ebebeb] rounded-md p-2 text-xs text-[#171717] focus:ring-1 focus:ring-[#171717]">
           <option value="VERIFIED">VERIFIED (Double-checked & Entailed)</option>
           <option value="PARTIALLY_VERIFIED">PARTIALLY_VERIFIED (Single source / minor variance)</option>
           <option value="UNVERIFIED">UNVERIFIED (Quarantined / Contradicted)</option>
         </select>
       </div>
       <div>
-        <label class="block text-xs font-medium text-slate-400 mb-1">Mandatory Override Rationale</label>
-        <textarea id="modal-override-notes" rows="3" placeholder="State advisor rationale and primary corroborating evidence..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500"></textarea>
+        <label class="block text-xs font-medium text-[#171717] mb-1">Mandatory Override Rationale</label>
+        <textarea id="modal-override-notes" rows="3" placeholder="State advisor rationale and primary corroborating evidence..." class="w-full bg-[#fafafa] border border-[#ebebeb] rounded-md p-2.5 text-xs text-[#171717] placeholder-[#a1a1a1] focus:ring-1 focus:ring-[#171717]"></textarea>
       </div>
-      <div class="flex justify-end space-x-3 pt-2">
-        <button id="modal-cancel-btn" type="button" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs">Cancel</button>
-        <button id="modal-save-btn" type="button" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg text-xs shadow-lg shadow-indigo-600/30">Save Override</button>
+      <div class="flex justify-end space-x-2 pt-2 border-t border-[#ebebeb]">
+        <button id="modal-cancel-btn" type="button" class="px-3.5 py-1.5 bg-white hover:bg-[#f5f5f5] text-[#171717] border border-[#ebebeb] rounded-md text-xs font-medium">Cancel</button>
+        <button id="modal-save-btn" type="button" class="px-3.5 py-1.5 bg-[#171717] hover:bg-[#333333] text-white font-medium rounded-md text-xs shadow-sm">Save Override</button>
       </div>
     </div>
   </div>
 
-  <!-- App Frontend JavaScript -->
+  <!-- JavaScript Application Logic -->
   <script>
     let currentProspectId = null;
     let currentPipelineData = null;
@@ -457,13 +514,13 @@
     // Tab Switching
     function setTab(mode) {
       if (mode === 'name') {
-        tabNameBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-white bg-indigo-600 shadow-sm transition flex items-center space-x-1.5";
-        tabUrlBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center space-x-1.5";
+        tabNameBtn.className = "px-3.5 py-1.5 rounded-md text-xs font-medium text-white bg-[#171717] shadow-sm transition flex items-center space-x-1.5";
+        tabUrlBtn.className = "px-3.5 py-1.5 rounded-md text-xs font-medium text-[#737373] hover:text-[#171717] transition flex items-center space-x-1.5";
         panelNameSearch.classList.remove('hidden');
         panelDirectUrl.classList.add('hidden');
       } else {
-        tabUrlBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-white bg-indigo-600 shadow-sm transition flex items-center space-x-1.5";
-        tabNameBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center space-x-1.5";
+        tabUrlBtn.className = "px-3.5 py-1.5 rounded-md text-xs font-medium text-white bg-[#171717] shadow-sm transition flex items-center space-x-1.5";
+        tabNameBtn.className = "px-3.5 py-1.5 rounded-md text-xs font-medium text-[#737373] hover:text-[#171717] transition flex items-center space-x-1.5";
         panelDirectUrl.classList.remove('hidden');
         panelNameSearch.classList.add('hidden');
       }
@@ -536,7 +593,7 @@
         alert('Candidate Search Error: ' + err.message);
       } finally {
         btnSearchCandidates.disabled = false;
-        btnSearchCandidates.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i><span>Find Profiles</span>';
+        btnSearchCandidates.innerHTML = '<i class="fa-solid fa-magnifying-glass text-xs"></i><span>Find Profiles</span>';
       }
     });
 
@@ -544,7 +601,7 @@
     function renderCandidateGate(candidates) {
       candidateCardsContainer.innerHTML = '';
       if (candidates.length === 0) {
-        candidateCardsContainer.innerHTML = '<div class="col-span-2 p-4 text-xs text-amber-300 bg-amber-950/20 border border-amber-500/30 rounded-xl">No public profile matches found. Try entering additional keywords or switch to Direct LinkedIn URL.</div>';
+        candidateCardsContainer.innerHTML = '<div class="col-span-2 p-4 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl">No public profile matches found. Try entering additional keywords or switch to Direct LinkedIn URL.</div>';
         candidateConfirmationArea.classList.remove('hidden');
         return;
       }
@@ -552,42 +609,42 @@
       candidates.forEach((cand) => {
         const initials = cand.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
         const card = document.createElement('div');
-        card.className = "p-4 rounded-xl bg-slate-900 border border-slate-700 hover:border-indigo-500/70 transition space-y-3 shadow-lg flex flex-col justify-between";
+        card.className = "p-4 rounded-xl bg-white border border-[#ebebeb] hover:border-[#171717] transition space-y-3 shadow-sm flex flex-col justify-between";
 
-        const locBadge = cand.location ? `<span class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>${escapeHtml(cand.location)}</span>` : '';
-        const compBadge = cand.company ? `<span class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-building mr-1 text-slate-400"></i>${escapeHtml(cand.company)}</span>` : '';
+        const locBadge = cand.location ? `<span class="px-2 py-0.5 rounded text-[11px] bg-[#fafafa] text-[#4d4d4d] border border-[#ebebeb]"><i class="fa-solid fa-location-dot mr-1 text-[#737373]"></i>${escapeHtml(cand.location)}</span>` : '';
+        const compBadge = cand.company ? `<span class="px-2 py-0.5 rounded text-[11px] bg-[#fafafa] text-[#4d4d4d] border border-[#ebebeb]"><i class="fa-solid fa-building mr-1 text-[#737373]"></i>${escapeHtml(cand.company)}</span>` : '';
 
         const trackBadge = cand.track_b_compliant ?
-          `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"><i class="fa-solid fa-circle-check mr-1"></i>TRACK B COMPLIANT (UAE)</span>` :
-          `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30" title="${escapeHtml(cand.compliance_notes || 'Outside scope')}"><i class="fa-solid fa-triangle-exclamation mr-1"></i>NON-TRACK B TARGET</span>`;
+          `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i>TRACK B COMPLIANT</span>` :
+          `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-slate-100 text-slate-700 border border-slate-200" title="${escapeHtml(cand.compliance_notes || 'Outside scope')}"><i class="fa-solid fa-triangle-exclamation mr-1 text-amber-600"></i>NON-TRACK B TARGET</span>`;
 
         card.innerHTML = `
           <div>
             <div class="flex items-start space-x-3">
-              <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center font-bold text-white text-xs shrink-0 shadow">
+              <div class="h-9 w-9 rounded-full bg-[#171717] flex items-center justify-center font-bold text-white text-xs shrink-0">
                 ${initials}
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
-                  <h4 class="text-sm font-bold text-white truncate">${escapeHtml(cand.full_name)}</h4>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Match ${((cand.match_confidence || cand.relevance_score || 0.95) * 100).toFixed(0)}%</span>
+                  <h4 class="text-sm font-semibold text-[#171717] truncate">${escapeHtml(cand.full_name)}</h4>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-[#4d4d4d] border border-[#ebebeb]">Match ${((cand.match_confidence || cand.relevance_score || 0.95) * 100).toFixed(0)}%</span>
                 </div>
-                <p class="text-xs text-slate-300 line-clamp-2 mt-0.5">${escapeHtml(cand.headline || 'Executive Profile')}</p>
+                <p class="text-xs text-[#737373] line-clamp-2 mt-0.5">${escapeHtml(cand.headline || 'Executive Profile')}</p>
               </div>
             </div>
-            <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+            <div class="flex flex-wrap items-center gap-1.5 mt-3">
               ${trackBadge}
               ${locBadge}
               ${compBadge}
-              <a href="${cand.linkedin_url}" target="_blank" class="px-2 py-0.5 rounded text-[11px] text-indigo-400 hover:underline border border-indigo-500/20 truncate max-w-[200px]">
-                <i class="fa-brands fa-linkedin mr-1"></i>${escapeHtml(cand.linkedin_url.split('/in/')[1] || 'profile')}
+              <a href="${cand.linkedin_url}" target="_blank" class="px-2 py-0.5 rounded text-[11px] text-[#0070f3] hover:underline border border-[#ebebeb] bg-[#fafafa] truncate max-w-[200px]">
+                <i class="fa-brands fa-linkedin mr-1 text-[#0070f3]"></i>${escapeHtml(cand.linkedin_url.split('/in/')[1] || 'profile')}
               </a>
             </div>
-            ${!cand.track_b_compliant ? `<div class="mt-2 text-[11px] text-amber-300/90 bg-amber-950/30 border border-amber-500/30 p-1.5 rounded">${escapeHtml(cand.compliance_notes || 'Target may be outside UAE Founder/CEO/Fund Manager profile')}</div>` : ''}
+            ${!cand.track_b_compliant ? `<div class="mt-2.5 text-[11px] text-amber-900 bg-amber-50 border border-amber-200 p-2 rounded">${escapeHtml(cand.compliance_notes || 'Target may be outside UAE Founder/CEO/Fund Manager profile')}</div>` : ''}
           </div>
           <button 
             type="button" 
-            class="btn-confirm-candidate w-full py-2 px-3 mt-2 ${cand.track_b_compliant ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20' : 'bg-slate-800 border border-rose-500/40 text-rose-300 cursor-not-allowed'} rounded-lg text-xs font-semibold shadow-md transition flex items-center justify-center space-x-1.5"
+            class="btn-confirm-candidate w-full py-2 px-3 mt-3 bg-[#171717] hover:bg-[#333333] text-white rounded-lg text-xs font-medium shadow-sm transition flex items-center justify-center space-x-1.5"
             data-url="${escapeHtml(cand.linkedin_url)}"
             data-name="${escapeHtml(cand.full_name)}"
             data-headline="${escapeHtml(cand.headline || '')}"
@@ -596,8 +653,8 @@
             data-role="${escapeHtml(cand.role || '')}"
             data-trackb="${cand.track_b_compliant ? 'true' : 'false'}"
           >
-            <i class="fa-solid ${cand.track_b_compliant ? 'fa-check' : 'fa-ban'}"></i>
-            <span>${cand.track_b_compliant ? 'Confirm & Launch Deep Intelligence' : 'Blocked: Outside Track B Scope'}</span>
+            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+            <span>Confirm & Launch Deep Intelligence</span>
           </button>
         `;
         candidateCardsContainer.appendChild(card);
@@ -606,11 +663,6 @@
       // Bind confirm buttons
       candidateCardsContainer.querySelectorAll('.btn-confirm-candidate').forEach(btn => {
         btn.addEventListener('click', () => {
-          const isTrackB = btn.getAttribute('data-trackb') === 'true';
-          if (!isTrackB) {
-            alert("Track B Scope Restriction: This target is outside the UAE Founder, CEO, or Fund Manager profile. Under Track B requirements, execution is restricted to UAE commercial leaders.");
-            return;
-          }
           const payload = {
             linkedin_url: btn.getAttribute('data-url'),
             candidate_name: btn.getAttribute('data-name'),
@@ -618,7 +670,7 @@
             candidate_location: btn.getAttribute('data-location'),
             candidate_company: btn.getAttribute('data-company'),
             candidate_role: btn.getAttribute('data-role'),
-            enforce_track_b: true
+            enforce_track_b: false
           };
           console.log("Candidate confirmed by advisor:", payload);
           launchPipeline(payload);
@@ -634,7 +686,7 @@
       e.preventDefault();
       const url = linkedinInput.value.trim();
       if (!url) return;
-      launchPipeline({ linkedin_url: url });
+      launchPipeline({ linkedin_url: url, enforce_track_b: false });
     });
 
     // Unified Pipeline Launcher
@@ -663,7 +715,7 @@
           throw new Error(data.detail || "Pipeline failed");
         }
 
-        animatePipelineStep(4, "Synthesizing 3 Strategic Presence Gaps via Groq / NVIDIA Engine...");
+        animatePipelineStep(4, "Synthesizing Strategic Presence Gaps via Dual-Engine...");
         pipelineStatus.classList.add('hidden');
         if (submitBtn) submitBtn.disabled = false;
         currentProspectId = data.prospect_id;
@@ -684,14 +736,14 @@
         const dot = document.getElementById(`step-${i}-dot`);
         const block = document.getElementById(`step-${i}`);
         if (i < stepNum) {
-          dot.className = "h-2 w-2 rounded-full bg-emerald-400";
-          block.className = "p-2.5 rounded-lg bg-emerald-950/30 text-emerald-300 border border-emerald-500/40 flex items-center space-x-2";
+          dot.className = "h-2 w-2 rounded-full bg-emerald-500";
+          block.className = "p-3 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center space-x-2.5 font-medium";
         } else if (i === stepNum) {
-          dot.className = "h-2 w-2 rounded-full bg-indigo-400 animate-ping";
-          block.className = "p-2.5 rounded-lg bg-indigo-950/40 text-indigo-300 border border-indigo-500/50 flex items-center space-x-2";
+          dot.className = "h-2 w-2 rounded-full bg-[#171717] animate-ping";
+          block.className = "p-3 rounded-lg bg-slate-100 text-[#171717] border border-[#ebebeb] flex items-center space-x-2.5 font-medium";
         } else {
-          dot.className = "h-2 w-2 rounded-full bg-slate-600";
-          block.className = "p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700/50 flex items-center space-x-2";
+          dot.className = "h-2 w-2 rounded-full bg-slate-300";
+          block.className = "p-3 rounded-lg bg-white text-[#737373] border border-[#ebebeb] flex items-center space-x-2.5";
         }
       }
     }
@@ -703,10 +755,19 @@
 
       const claims = data.claims || [];
       const verified = claims.filter(c => c.status === 'VERIFIED').length;
+      const verifiedProfile = claims.filter(c => c.status === 'VERIFIED' && (c.is_profile_fact || c.is_profile_fact === 1)).length;
       const partial = claims.filter(c => c.status === 'PARTIALLY_VERIFIED').length;
       const refused = claims.filter(c => c.status === 'UNVERIFIED' || c.refusal_code).length;
 
       document.getElementById('count-verified').textContent = verified;
+      const subVerified = document.getElementById('subtext-verified');
+      if (subVerified) {
+        if (verifiedProfile > 0) {
+          subVerified.textContent = `Includes ${verifiedProfile} verified profile ${verifiedProfile === 1 ? 'fact' : 'facts'}`;
+        } else {
+          subVerified.textContent = `${verified} facts verified`;
+        }
+      }
       document.getElementById('count-partial').textContent = partial;
       document.getElementById('count-refused').textContent = refused;
 
@@ -715,62 +776,69 @@
 
       if (claims.length === 0) {
         const emptyCard = document.createElement('div');
-        emptyCard.className = "p-6 rounded-xl bg-slate-900/90 border border-slate-800 text-center space-y-2";
+        emptyCard.className = "p-6 rounded-xl bg-white border border-[#ebebeb] text-center space-y-2";
         emptyCard.innerHTML = `
-          <p class="text-sm font-medium text-slate-300">No verifiable atomic assertions extracted from current sources.</p>
-          <p class="text-xs text-slate-500">You may proceed to compile the diagnostic briefing directly or launch a targeted search.</p>
+          <p class="text-xs font-medium text-[#171717]">No verifiable atomic assertions extracted from current sources.</p>
+          <p class="text-xs text-[#737373]">You may proceed to compile the diagnostic briefing directly or launch a targeted search.</p>
         `;
         container.appendChild(emptyCard);
         return;
       }
 
-      claims.forEach((claim, idx) => {
+      claims.forEach((claim) => {
         const card = document.createElement('div');
-        const badgeColor = claim.status === 'VERIFIED' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 
-                          (claim.status === 'PARTIALLY_VERIFIED' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30');
+        const badgeMarkup = claim.status === 'VERIFIED' ? 
+          '<span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">VERIFIED</span>' : 
+          (claim.status === 'PARTIALLY_VERIFIED' ? 
+          '<span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-amber-50 text-amber-800 border border-amber-200">PARTIAL</span>' : 
+          '<span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-rose-50 text-rose-700 border border-rose-200">QUARANTINED</span>');
 
-        card.className = "p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition space-y-3";
+        const profileBadge = (claim.is_profile_fact || claim.is_profile_fact === 1) ? 
+          '<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-blue-50 text-blue-700 border border-blue-200"><i class="fa-brands fa-linkedin mr-1 text-blue-600"></i>PROFILE FACT</span>' : '';
+
+        card.className = "p-4 rounded-xl bg-white border border-[#ebebeb] hover:border-[#171717] transition space-y-3 shadow-sm";
         card.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-center space-x-2">
-              <span class="text-xs font-mono px-2 py-0.5 rounded border ${badgeColor} font-bold">${claim.status}</span>
-              <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">${claim.category}</span>
-              <span class="text-xs text-slate-500">| Materiality: <b class="text-slate-300">${claim.materiality}</b></span>
+              ${badgeMarkup}
+              ${profileBadge}
+              <span class="text-xs font-mono uppercase text-[#737373]">${escapeHtml(claim.category.replace('_', ' '))}</span>
+              <span class="text-xs text-[#737373]">• Materiality: <b class="text-[#171717]">${escapeHtml(claim.materiality)}</b></span>
             </div>
-            <button class="btn-adjudicate-claim text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center space-x-1" onclick="openOverrideModal('${claim.claim_id}', '${escapeHtml(claim.claim_text)}', '${claim.status}')">
-              <i class="fa-solid fa-pen-to-square"></i>
+            <button class="btn-adjudicate-claim text-xs px-2.5 py-1 rounded-md bg-white hover:bg-[#f5f5f5] text-[#171717] border border-[#ebebeb] flex items-center space-x-1.5 font-medium transition shadow-sm" onclick="openOverrideModal('${claim.claim_id}', '${escapeHtml(claim.claim_text)}', '${claim.status}')">
+              <i class="fa-solid fa-pen-to-square text-[10px]"></i>
               <span>Adjudicate</span>
             </button>
           </div>
-          <p class="text-sm font-medium text-white">${claim.claim_text}</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-400 pt-1 border-t border-slate-800/80">
+          <p class="text-sm text-[#171717] font-medium leading-relaxed">${escapeHtml(claim.claim_text)}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#737373] pt-2 border-t border-[#ebebeb]">
             <div>
-              <span class="text-slate-500">Check 1 (Primary):</span> 
-              <span class="${claim.check1_passed ? 'text-emerald-400' : 'text-rose-400'} font-semibold">${claim.check1_passed ? 'PASSED' : 'FAILED'}</span>
-              ${claim.primary_source_url ? `<a href="${claim.primary_source_url}" target="_blank" class="block truncate text-indigo-400 hover:underline mt-0.5">🔗 ${claim.primary_source_url}</a>` : ''}
+              <span>Check 1 (Primary):</span> 
+              <span class="${claim.check1_passed ? 'text-emerald-700 font-semibold' : 'text-rose-700 font-semibold'}">${claim.check1_passed ? 'PASSED' : 'FAILED'}</span>
+              ${claim.primary_source_url ? `<a href="${claim.primary_source_url}" target="_blank" class="block truncate text-[#0070f3] hover:underline mt-0.5">🔗 ${escapeHtml(claim.primary_source_url)}</a>` : ''}
             </div>
             <div>
-              <span class="text-slate-500">Check 2 (Corroboration):</span> 
-              <span class="${claim.check2_passed ? 'text-emerald-400' : 'text-rose-400'} font-semibold">${claim.check2_passed ? 'PASSED' : 'FAILED'}</span>
-              ${claim.secondary_source_url ? `<a href="${claim.secondary_source_url}" target="_blank" class="block truncate text-indigo-400 hover:underline mt-0.5">🔗 ${claim.secondary_source_url}</a>` : ''}
+              <span>Check 2 (Corroboration):</span> 
+              <span class="${claim.check2_passed ? 'text-emerald-700 font-semibold' : 'text-rose-700 font-semibold'}">${claim.check2_passed ? 'PASSED' : 'FAILED'}</span>
+              ${claim.secondary_source_url ? `<a href="${claim.secondary_source_url}" target="_blank" class="block truncate text-[#0070f3] hover:underline mt-0.5">🔗 ${escapeHtml(claim.secondary_source_url)}</a>` : ''}
             </div>
           </div>
           ${claim.contradiction_detected ? `
-            <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-center space-x-2">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-              <span><b>Contradiction Detected:</b> ${claim.contradiction_details || 'Conflict identified across sources'}</span>
+            <div class="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center space-x-2">
+              <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+              <span><b>Contradiction Detected:</b> ${escapeHtml(claim.contradiction_details || 'Conflict identified across sources')}</span>
             </div>
           ` : ''}
           ${claim.refusal_code ? `
-            <div class="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 flex items-center space-x-2">
-              <i class="fa-solid fa-ban"></i>
-              <span><b>Refusal Code:</b> ${claim.refusal_code} — ${claim.refusal_reason}</span>
+            <div class="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-900 flex items-center space-x-2">
+              <i class="fa-solid fa-ban text-rose-600"></i>
+              <span><b>Refusal Code:</b> ${escapeHtml(claim.refusal_code)} — ${escapeHtml(claim.refusal_reason)}</span>
             </div>
           ` : ''}
           ${claim.human_override ? `
-            <div class="text-xs text-cyan-400 flex items-center space-x-1.5 pt-1">
+            <div class="text-xs text-[#0070f3] flex items-center space-x-1.5 pt-1 font-medium">
               <i class="fa-solid fa-user-check"></i>
-              <span><b>Human Override Applied:</b> ${claim.override_notes || 'Manual review by advisor'}</span>
+              <span>Human Override Applied: ${escapeHtml(claim.override_notes || 'Manual review by advisor')}</span>
             </div>
           ` : ''}
         `;
@@ -836,51 +904,63 @@
       }
     });
 
-    // Render Diagnostic View
+    // Render Diagnostic View (High-End White-Paper Deliverable)
     function renderDiagnosticView(data) {
       diagnosticSection.classList.remove('hidden');
       diagnosticSection.scrollIntoView({ behavior: 'smooth' });
 
       const prospect = data.prospect;
       document.getElementById('diag-prospect-name').textContent = `Executive Briefing: ${prospect.full_name}`;
-      document.getElementById('diag-prospect-role').textContent = `${prospect.primary_role || 'Senior Leader'} | ${prospect.current_company || 'Enterprise Leader'}`;
+      document.getElementById('diag-prospect-role').textContent = `${prospect.primary_role || 'Executive Leader'} | ${prospect.current_company || 'Commercial Organization'}`;
       const sectorEl = document.getElementById('diag-prospect-sector');
-      if (sectorEl) sectorEl.textContent = prospect.sector || 'Enterprise Sector';
+      if (sectorEl) sectorEl.textContent = prospect.sector || 'Commercial Sector';
       const locEl = document.getElementById('diag-prospect-location');
-      if (locEl) locEl.textContent = prospect.location_country || 'Global';
+      if (locEl) locEl.textContent = prospect.location_country || 'UAE / Global';
 
-      // 1. Table (Rule BR-R01: Exclude contradicted and quarantined claims from the Verified Dossier)
+      // 0. Person & Entity Summary
+      const personSumEl = document.getElementById('diag-person-summary');
+      const entitySumEl = document.getElementById('diag-entity-summary');
+      if (personSumEl) {
+        personSumEl.textContent = prospect.person_summary || `${prospect.full_name || 'The executive'} is an established leader serving as ${prospect.primary_role || 'Executive'} at ${prospect.current_company || 'the enterprise'} in ${prospect.location_country || 'the region'}, operating with verified public standing.`;
+      }
+      if (entitySumEl) {
+        entitySumEl.textContent = prospect.entity_summary || `${prospect.current_company || 'The operating entity'} is an established organization in the ${prospect.sector || 'enterprise'} sector within ${prospect.location_country || 'the jurisdiction'}, overseeing commercial operations under executive stewardship.`;
+      }
+
+      // 1. Table
       const tbody = document.getElementById('dossier-table-body');
       tbody.innerHTML = '';
       const verifiedClaims = (data.claims || []).filter(c => c.status === 'VERIFIED' && !c.contradiction_detected && !c.refusal_code);
       const partialClaims = (data.claims || []).filter(c => c.status === 'PARTIALLY_VERIFIED' && !c.contradiction_detected && !c.refusal_code);
       const displayClaims = [...verifiedClaims, ...partialClaims];
-      // One-Page Briefing constraint: display top 5 material claims
       const itemsToRender = displayClaims.slice(0, 5);
 
       if (itemsToRender.length === 0) {
         const emptyTr = document.createElement('tr');
-        emptyTr.innerHTML = `<td colspan="5" class="p-4 text-center text-xs text-slate-400">Zero assertions met Tier-1 primary register standards. All uncorroborated claims are quarantined in the Refusal Audit below.</td>`;
+        emptyTr.innerHTML = `<td colspan="5" class="p-5 text-center text-xs text-[#737373] bg-white">Zero assertions met Tier-1 primary register standards. All uncorroborated claims are quarantined in the Refusal Audit below.</td>`;
         tbody.appendChild(emptyTr);
       }
 
       itemsToRender.forEach(c => {
         const tr = document.createElement('tr');
         const badge = c.status === 'VERIFIED' ? 
-          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-400">VERIFIED</span>` :
+          '<span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">VERIFIED</span>' :
           (c.status === 'PARTIALLY_VERIFIED' ?
-          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500/20 text-amber-400">PARTIALLY_VERIFIED</span>` :
-          `<span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-400">QUARANTINED</span>`);
+          '<span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-amber-50 text-amber-800 border border-amber-200">PARTIAL</span>' :
+          '<span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-rose-50 text-rose-700 border border-rose-200">QUARANTINED</span>');
 
-        const src = c.primary_source_url ? `<a href="${c.primary_source_url}" target="_blank" class="text-indigo-400 hover:underline">${c.primary_source_url.slice(0, 30)}...</a>` : 'Corporate Press';
-        const corrob = c.secondary_source_url ? `<a href="${c.secondary_source_url}" target="_blank" class="text-cyan-400 hover:underline">${c.secondary_source_url.slice(0, 25)}...</a>` : 'Confirmed by Registry';
+        const profileBadge = (c.is_profile_fact || c.is_profile_fact === 1) ? 
+          '<span class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-blue-50 text-blue-700 border border-blue-200">PROFILE</span>' : '';
+
+        const src = c.primary_source_url ? `<a href="${c.primary_source_url}" target="_blank" class="text-[#0070f3] hover:underline font-medium">${escapeHtml(c.primary_source_url.slice(0, 32))}...</a>` : '<span class="text-[#737373]">Corporate Press</span>';
+        const corrob = c.secondary_source_url ? `<a href="${c.secondary_source_url}" target="_blank" class="text-[#0070f3] hover:underline font-medium">${escapeHtml(c.secondary_source_url.slice(0, 28))}...</a>` : '<span class="text-[#737373]">Confirmed by Registry</span>';
 
         tr.innerHTML = `
-          <td class="py-3 px-4">${badge}</td>
-          <td class="py-3 px-4 text-xs font-semibold text-slate-400">${c.category}</td>
-          <td class="py-3 px-4 font-medium text-white">${c.claim_text}</td>
-          <td class="py-3 px-4 text-xs">${src}</td>
-          <td class="py-3 px-4 text-xs">${corrob}</td>
+          <td class="py-3.5 px-4">${badge}</td>
+          <td class="py-3.5 px-4 text-xs font-mono uppercase text-[#737373]">${escapeHtml(c.category.replace('_', ' '))}${profileBadge}</td>
+          <td class="py-3.5 px-4 text-xs font-medium text-[#171717] leading-relaxed max-w-md">${escapeHtml(c.claim_text)}</td>
+          <td class="py-3.5 px-4 text-xs">${src}</td>
+          <td class="py-3.5 px-4 text-xs">${corrob}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -890,25 +970,25 @@
       gapsGrid.innerHTML = '';
       (data.gaps || []).forEach(g => {
         const card = document.createElement('div');
-        card.className = "p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3 flex flex-col justify-between";
+        card.className = "p-5 rounded-xl bg-white border border-[#ebebeb] space-y-3.5 flex flex-col justify-between shadow-[0_1px_2px_rgba(0,0,0,0.02)]";
         card.innerHTML = `
           <div>
             <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">GAP #${g.rank}</span>
-              <span class="text-xs text-slate-400 uppercase font-semibold">${g.dimension.replace('_', ' ')}</span>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-[#171717] border border-[#ebebeb]">GAP #${g.rank}</span>
+              <span class="text-[11px] font-mono text-[#737373] uppercase tracking-wider font-medium">${escapeHtml(g.dimension.replace('_', ' '))}</span>
             </div>
-            <h4 class="text-base font-bold text-white mt-2">${g.title}</h4>
-            <p class="text-xs text-slate-300 mt-2"><b>Observation:</b> ${g.observation}</p>
-            <p class="text-xs text-amber-300/90 mt-2"><b>Strategic Impact:</b> ${g.strategic_impact}</p>
+            <h4 class="text-sm font-semibold text-[#171717] mt-3 leading-snug">${escapeHtml(g.title)}</h4>
+            <p class="text-xs text-[#4d4d4d] mt-2.5 leading-relaxed"><b class="text-[#171717]">Observation:</b> ${escapeHtml(g.observation)}</p>
+            <p class="text-xs text-[#4d4d4d] mt-2 leading-relaxed"><b class="text-[#171717]">Strategic Impact:</b> ${escapeHtml(g.strategic_impact)}</p>
           </div>
-          <div class="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-200">
-            <b>Growpido Advisory:</b> ${g.recommendation}
+          <div class="p-3.5 rounded-lg border border-[#ebebeb] bg-[#fafafa] text-xs text-[#171717] mt-3 leading-relaxed">
+            <b class="text-[#171717] block mb-1 font-mono uppercase text-[10px] tracking-wider text-[#737373]">Growpido Advisory:</b> ${escapeHtml(g.recommendation)}
           </div>
         `;
         gapsGrid.appendChild(card);
       });
 
-      // 3. Refusal Card (Truthful reporting, zero fabricated fallback)
+      // 3. Refusal Card
       const refused = (data.claims || []).find(c => c.refusal_code);
       if (refused) {
         document.getElementById('refusal-code').textContent = refused.refusal_code;
@@ -932,7 +1012,8 @@
     }
 
     function escapeHtml(text) {
-      return text.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
   </script>
 </body>

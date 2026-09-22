@@ -393,3 +393,82 @@ def test_guaranteed_refusal_example_in_pipeline():
     assert refused_claims[0]["refusal_code"] in ["REF-01", "REF-02", "REF-03", "REF-04", "REF-05"]
     assert len(refused_claims[0]["refusal_reason"]) > 10
 
+def test_person_and_entity_summary_rendering():
+    """
+    Tests that Person and Entity summaries are correctly synthesized, persisted, and rendered.
+    """
+    prospect = Prospect(
+        full_name="Ronaldo Mouchawar",
+        primary_role="Vice President, Amazon MENA",
+        current_company="Amazon MENA",
+        location_country="United Arab Emirates",
+        sector="E-Commerce & Digital Marketplaces",
+        linkedin_url="https://www.linkedin.com/in/ronaldo-mouchawar-souq",
+        slug="ronaldo-mouchawar-souq",
+        person_summary="Ronaldo Mouchawar is a technology pioneer serving as Vice President of Amazon MENA and co-founder of Souq.com.",
+        entity_summary="Amazon MENA is the leading e-commerce and cloud logistics fulfillment infrastructure network in the Middle East."
+    )
+    db.save_prospect(prospect)
+    retrieved = db.get_prospect(str(prospect.prospect_id))
+    assert retrieved["person_summary"] == prospect.person_summary
+    assert retrieved["entity_summary"] == prospect.entity_summary
+
+    md_output = DiagnosticRenderer.render_markdown(prospect, [], [])
+    assert "## Executive & Operating Entity Briefing" in md_output
+    assert "**The Executive (Person)**: Ronaldo Mouchawar is a technology pioneer" in md_output
+    assert "**The Operating Entity (Company)**: Amazon MENA is the leading e-commerce" in md_output
+
+def test_profile_facts_retrieved_verified_and_counted():
+    """
+    Tests that profile facts retrieved from LinkedIn (role, company, location)
+    are seeded as candidate claims, marked is_profile_fact=True, verified, and counted in Verified (Double-Checked).
+    """
+    from src.extraction.claim_auditor import ClaimAuditor
+    from uuid import uuid4
+    auditor = ClaimAuditor()
+    pid = uuid4()
+    claims = auditor.extract_profile_claims(
+        prospect_id=pid,
+        full_name="Ronaldo Mouchawar",
+        primary_role="Vice President, Amazon MENA & Co-founder Souq.com",
+        current_company="Amazon MENA",
+        location_country="United Arab Emirates"
+    )
+    assert len(claims) >= 2
+    assert all(c.is_profile_fact for c in claims)
+    claim_texts = " ".join(c.claim_text for c in claims)
+    assert "Ronaldo Mouchawar" in claim_texts
+    assert "Souq" in claim_texts or "Amazon" in claim_texts
+
+    # Check persistence and rendering
+    prospect = Prospect(
+        full_name="Ronaldo Mouchawar",
+        primary_role="Vice President, Amazon MENA",
+        current_company="Amazon MENA",
+        location_country="United Arab Emirates",
+        sector="E-Commerce & Digital Marketplaces",
+        linkedin_url="https://www.linkedin.com/in/ronaldo-mouchawar-souq",
+        slug="ronaldo-mouchawar-souq"
+    )
+    db.save_claims(claims)
+    retrieved = db.get_claims(str(pid))
+    assert len(retrieved) == len(claims)
+    assert any(r.get("is_profile_fact") == 1 for r in retrieved)
+
+    # Verify that verified profile claims are rendered in Markdown with Profile tag
+    verified_profile_claim = Claim(
+        prospect_id=prospect.prospect_id,
+        claim_text="Ronaldo Mouchawar serves as Vice President of Amazon MENA.",
+        category=ClaimCategory.ROLE_TENURE,
+        materiality=Materiality.HIGH,
+        status=ClaimStatus.VERIFIED,
+        check1_passed=True,
+        check2_passed=True,
+        is_profile_fact=True,
+        primary_source_url="https://press.aboutamazon.com/2017/3/amazon-to-acquire-souq-com",
+        secondary_source_url="https://www.reuters.com/article/souq-amazon"
+    )
+    md = DiagnosticRenderer.render_markdown(prospect, [verified_profile_claim], [])
+    assert "| `VERIFIED` | ROLE_TENURE (Profile) | Ronaldo Mouchawar serves as Vice President" in md
+
+

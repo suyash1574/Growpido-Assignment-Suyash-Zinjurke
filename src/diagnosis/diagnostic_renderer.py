@@ -31,6 +31,17 @@ class DiagnosticRenderer:
         md.append(f"**Fact Verification Standard**: Double-Checked against Tier-1 Primary Registers (Sovereign Portals, Government Registries, Official Corporate Disclosures)")
         md.append("\n---\n")
 
+        # Executive & Entity Summary Briefing
+        p_sum = getattr(prospect, 'person_summary', None)
+        e_sum = getattr(prospect, 'entity_summary', None)
+        if p_sum or e_sum:
+            md.append("## Executive & Operating Entity Briefing")
+            if p_sum:
+                md.append(f"- **The Executive (Person)**: {p_sum}")
+            if e_sum:
+                md.append(f"- **The Operating Entity (Company)**: {e_sum}")
+            md.append("\n---\n")
+
         def _truncate(text: str, max_len: int) -> str:
             clean = " ".join((text or "").strip().split())
             return clean if len(clean) <= max_len else clean[:max_len - 3] + "..."
@@ -51,25 +62,24 @@ class DiagnosticRenderer:
             status_label = "`VERIFIED`" if c.status == ClaimStatus.VERIFIED else "`PARTIALLY_VERIFIED`"
             src_link = f"[{c.primary_source_url[:35]}...]({c.primary_source_url})" if c.primary_source_url else "Primary Domain"
             corrob = f"[{c.secondary_source_url[:30]}...]({c.secondary_source_url})" if c.secondary_source_url else "Confirmed"
-            bounded_text = _truncate(c.claim_text, 140)
-            md.append(f"| {status_label} | {c.category.value} | {bounded_text} | {src_link} | {corrob} |")
+            bounded_text = c.claim_text
+            cat_display = f"{c.category.value} (Profile)" if getattr(c, 'is_profile_fact', False) else c.category.value
+            md.append(f"| {status_label} | {cat_display} | {bounded_text} | {src_link} | {corrob} |")
 
         if len(sorted_verified) > 5:
             md.append(f"\n*Note: Top 5 material assertions displayed for one-page executive brevity. All {len(sorted_verified)} verified claims are immutably preserved in the cryptographic audit trail.*")
 
+        # 2. Three Strategic Presence Gaps
         md.append("\n---\n")
-
-        # 2. Three Strategic Presence Gaps (Bounded text length for one-page brevity)
         md.append("## 2. Three Biggest Strategic Presence Gaps")
         for g in gaps[:3]:
             dim_title = g.dimension.value.replace("_", " ").title()
-            obs = _truncate(g.observation, 160)
-            impact = _truncate(g.strategic_impact, 140)
-            recom = _truncate(g.recommendation, 140)
             md.append(f"### Gap #{g.rank}: {g.title} ({dim_title})")
-            md.append(f"- **Observation**: {obs}")
-            md.append(f"- **Strategic Commercial Impact**: {impact}")
-            md.append(f"- **Growpido Advisory Recommendation**: {recom}\n")
+            md.append(f"- **Verification Status**: `UNVERIFIED` (Advisory Synthesis)")
+            md.append(f"- **Primary Citation**: Growpido Intelligence Advisory Engine (Footprint Analysis)")
+            md.append(f"- **Observation**: {g.observation}")
+            md.append(f"- **Strategic Commercial Impact**: {g.strategic_impact}")
+            md.append(f"- **Growpido Advisory Recommendation**: {g.recommendation}\n")
 
         md.append("---\n")
 
@@ -77,11 +87,9 @@ class DiagnosticRenderer:
         md.append("## 3. Adversarial Refusal Demonstration (Track B Mandate)")
         if refused_claims:
             for idx, refused in enumerate(refused_claims[:2], 1):
-                r_text = _truncate(refused.claim_text, 140)
-                r_reason = _truncate(refused.refusal_reason or 'Excluded pursuant to Rule BR-R01 (Accuracy Dominance): Unsubstantiated by Tier-1 primary records.', 180)
-                md.append(f"> **Quarantined Claim #{idx}**: *\"{r_text}\"*")
+                md.append(f"> **Quarantined Claim #{idx}**: *\"{refused.claim_text}\"*")
                 md.append(f"> \n> **Refusal Code**: `{refused.refusal_code or 'REF-01'}`")
-                md.append(f"> \n> **Causal Rationale**: {r_reason}\n")
+                md.append(f"> \n> **Causal Rationale**: {refused.refusal_reason or 'Excluded pursuant to Rule BR-R01 (Accuracy Dominance): Unsubstantiated by Tier-1 primary records.'}\n")
         else:
             # Explicit warning if somehow zero claims were quarantined
             md.append(

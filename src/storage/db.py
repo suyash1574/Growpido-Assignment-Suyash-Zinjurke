@@ -42,6 +42,8 @@ class Database:
             sector TEXT DEFAULT 'Executive Leadership',
             track_b_compliant INTEGER DEFAULT 1,
             compliance_notes TEXT,
+            person_summary TEXT,
+            entity_summary TEXT,
             status TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -57,6 +59,14 @@ class Database:
             pass
         try:
             cur.execute("ALTER TABLE prospects ADD COLUMN compliance_notes TEXT")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE prospects ADD COLUMN person_summary TEXT")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE prospects ADD COLUMN entity_summary TEXT")
         except Exception:
             pass
         cur.execute("""
@@ -93,10 +103,15 @@ class Database:
             refusal_reason TEXT,
             human_override INTEGER DEFAULT 0,
             override_notes TEXT,
+            is_profile_fact INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(prospect_id) REFERENCES prospects(prospect_id)
         );
         """)
+        try:
+            cur.execute("ALTER TABLE claims ADD COLUMN is_profile_fact INTEGER DEFAULT 0")
+        except Exception:
+            pass
         cur.execute("""
         CREATE TABLE IF NOT EXISTS strategic_gaps (
             gap_id TEXT PRIMARY KEY,
@@ -155,13 +170,16 @@ class Database:
         conn.execute("""
         INSERT OR REPLACE INTO prospects (
             prospect_id, linkedin_url, slug, full_name, current_company, primary_role,
-            location_country, sector, track_b_compliant, compliance_notes, status, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            location_country, sector, track_b_compliant, compliance_notes,
+            person_summary, entity_summary, status, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         """, (
             str(p.prospect_id), p.linkedin_url, p.slug, p.full_name, p.current_company, p.primary_role,
             p.location_country, getattr(p, "sector", "Executive Leadership"),
             1 if getattr(p, "track_b_compliant", True) else 0,
             getattr(p, "compliance_notes", None),
+            getattr(p, "person_summary", None),
+            getattr(p, "entity_summary", None),
             p.status.value
         ))
         conn.commit()
@@ -183,15 +201,16 @@ class Database:
                 claim_id, prospect_id, claim_text, category, materiality, status,
                 primary_source_id, primary_source_url, secondary_source_id, secondary_source_url,
                 check1_passed, check2_passed, contradiction_detected, contradiction_details,
-                refusal_code, refusal_reason, human_override, override_notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                refusal_code, refusal_reason, human_override, override_notes, is_profile_fact
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 str(c.claim_id), str(c.prospect_id), c.claim_text, c.category.value, c.materiality.value, c.status.value,
                 str(c.primary_source_id) if c.primary_source_id else None, c.primary_source_url,
                 str(c.secondary_source_id) if c.secondary_source_id else None, c.secondary_source_url,
                 1 if c.check1_passed else 0, 1 if c.check2_passed else 0,
                 1 if c.contradiction_detected else 0, c.contradiction_details,
-                c.refusal_code, c.refusal_reason, 1 if c.human_override else 0, c.override_notes
+                c.refusal_code, c.refusal_reason, 1 if c.human_override else 0, c.override_notes,
+                1 if getattr(c, "is_profile_fact", False) else 0
             ))
         conn.commit()
 

@@ -24,7 +24,7 @@ class SearchClient:
         # Attempt Tavily if API key is provided
         if self.api_key:
             try:
-                async with httpx.AsyncClient(timeout=8.0) as client:
+                async with httpx.AsyncClient(timeout=15.0) as client:
                     payload = {
                         "api_key": self.api_key,
                         "query": query,
@@ -50,15 +50,15 @@ class SearchClient:
         # Live DuckDuckGo search fallback
         try:
             return await self._duckduckgo_live_search(query, max_results=max_results)
-        except Exception as e:
-            raise RuntimeError(f"ERR_LIVE_SEARCH_FAILED: Live OSINT search failed for query '{query}': {str(e)}")
+        except Exception:
+            return []
 
     async def _duckduckgo_live_search(self, query: str, max_results: int = 5) -> List[Dict[str, str]]:
         url = f"https://html.duckduckgo.com/html/?q={urllib.parse.quote_plus(query)}"
-        async with httpx.AsyncClient(timeout=5.0, headers=self.headers, follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=8.0, headers=self.headers, follow_redirects=True) as client:
             resp = await client.get(url)
             if resp.status_code != 200:
-                raise RuntimeError(f"HTTP {resp.status_code} returned by live search gateway.")
+                return []
 
             soup = BeautifulSoup(resp.text, "html.parser")
             results = []
@@ -89,6 +89,4 @@ class SearchClient:
                 if len(results) >= max_results:
                     break
 
-            if not results:
-                raise RuntimeError(f"Zero live search results parsed from web response for: {query}")
             return results

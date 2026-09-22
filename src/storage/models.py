@@ -66,6 +66,8 @@ class Prospect(BaseModel):
     sector: Optional[str] = "Executive Leadership"
     track_b_compliant: bool = True
     compliance_notes: Optional[str] = None
+    person_summary: Optional[str] = None
+    entity_summary: Optional[str] = None
     status: ProspectStatus = ProspectStatus.INITIALIZED
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -100,6 +102,7 @@ class Claim(BaseModel):
     refusal_reason: Optional[str] = None
     human_override: bool = False
     override_notes: Optional[str] = None
+    is_profile_fact: bool = False
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class StrategicGap(BaseModel):

@@ -64,10 +64,11 @@ class GapSynthesizer:
         if not self.client:
             return default_gaps
 
-        channels_found = []
+        channels_found = ["linkedin.com"]  # Prospect always has a LinkedIn URL provided
         if evidence_sources:
-            channels_found = list(set([s.domain for s in evidence_sources if s.domain]))
-        channel_context = f"Measured Channel Footprint: {', '.join(channels_found) if channels_found else 'None detected'}"
+            channels_found.extend([s.domain for s in evidence_sources if s.domain])
+        channels_found = list(set(channels_found))
+        channel_context = f"Measured Channel Footprint: {', '.join(channels_found)}"
 
         prompt = (
             f"You are Growpido's Principal Executive Branding Strategist.\n"
@@ -78,9 +79,11 @@ class GapSynthesizer:
             f"{channel_context}\n\n"
             "STRICT EVIDENCE GROUNDING RULES:\n"
             "1. Base observations strictly on the provided verified facts and the Measured Channel Footprint.\n"
-            "2. DO NOT invent or speculate about absent channels. Compare the 'Measured Channel Footprint' to what a top executive should have.\n"
-            "3. Frame observations around documented authority indexing, narrative clarity, and institutional syndication.\n"
-            "4. ONE-PAGE BREVITY: Keep observation, strategic_impact, and recommendation strictly under 140 characters each so the entire diagnostic fits on a single page.\n\n"
+            "2. DO NOT mention specific platforms like YouTube, Instagram, BCG, or CEO Works unless they are explicitly present in the Verified Facts or Measured Channel Footprint.\n"
+            "3. DO NOT invent or speculate about absent channels. You must NOT claim an entity or platform is absent, only that the measured footprint is limited to what is documented.\n"
+            "4. DO NOT present any affiliations or titles as fact unless they appear in the Verified Facts.\n"
+            "5. The observation MUST explicitly list the specific domain names found in the Measured Channel Footprint to provide visible evidence of the claim.\n"
+            "6. ONE-PAGE BREVITY: Keep observation, strategic_impact, and recommendation strictly under 140 characters each so the entire diagnostic fits on a single page.\n\n"
             "Synthesize exactly THREE strategic presence gaps explaining how this executive underrepresents their market authority:\n"
             "Gap 1: Authority Under-Indexing (dimension: 'AUTHORITY_UNDER_INDEXING')\n"
             "Gap 2: Channel Diversity Deficit (dimension: 'CHANNEL_DIVERSITY_DEFICIT')\n"
@@ -97,7 +100,7 @@ class GapSynthesizer:
         try:
             data = self.client.chat_completion_json(
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=1500,
+                max_tokens=1000,
                 temperature=0.2
             )
             items = data.get("gaps", [])

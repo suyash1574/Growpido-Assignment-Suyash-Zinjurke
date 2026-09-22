@@ -68,10 +68,20 @@ async def get_dashboard(request: Request):
 # --- Health Check ---
 @app.get("/api/health")
 async def health_check():
+    from src.llm_client import llm_client
     return {
         "status": "healthy",
         "service": "Growpido Intelligence Engine (Track B)",
-        "track": "Track B: Public OSINT & Double-Checked Verification"
+        "track": "Track B: Public OSINT & Double-Checked Verification",
+        "llm_router": {
+            "active_primary": llm_client.preferred_provider,
+            "last_provider_used": llm_client.last_provider_used,
+            "latency_ms": llm_client.last_latency_ms,
+            "groq_available": llm_client.is_provider_available("groq"),
+            "nvidia_available": llm_client.is_provider_available("nvidia"),
+            "openrouter_available": llm_client.is_provider_available("openrouter"),
+            "local_gguf_available": llm_client.is_provider_available("local_gguf"),
+        }
     }
 
 # --- Candidate Search (US1: Upstream Confirmation Gate) ---

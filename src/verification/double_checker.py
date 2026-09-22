@@ -1,8 +1,38 @@
 import json
+import re
 from uuid import UUID
 from typing import List, Dict, Any, Optional
 from src.llm_client import llm_client, UnifiedLLMClient
 from src.storage.models import Claim, EvidenceSource, SourceTier
+
+def extract_relevant_context(text: str, query: str, max_chars: int = 2500) -> str:
+    """
+    Extracts the most relevant context window from a source text centered on matching tokens.
+    If the text is <= max_chars, returns it in full.
+    Otherwise, finds the first occurrence of significant query tokens (>= 4 chars) and extracts a centered window.
+    """
+    if not text or len(text) <= max_chars:
+        return text or ""
+
+    lower_text = text.lower()
+    tokens = [t.lower() for t in re.sub(r'[^a-zA-Z0-9\s]', ' ', query).split() if len(t) >= 4]
+    
+    match_idx = -1
+    for t in tokens:
+        idx = lower_text.find(t)
+        if idx != -1:
+            match_idx = idx
+            break
+
+    if match_idx == -1:
+        return text[:max_chars]
+
+    half = max_chars // 2
+    start = max(0, match_idx - half)
+    end = min(len(text), start + max_chars)
+    if end - start < max_chars:
+        start = max(0, end - max_chars)
+    return text[start:end]
 
 class DoubleChecker:
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
@@ -42,9 +72,9 @@ class DoubleChecker:
                 "reason": "Tier-1 sources found but none contained relevant keyword entities."
             }
 
-        # Batch candidate Tier-1 passages into a single entailment verification call
+        # Batch candidate Tier-1 passages into a single entailment verification call with centered window
         passages = "\n\n".join([
-            f"Source URL: {s.url}\nPassage: {(s.raw_text_snippet or '')[:1200]}"
+            f"Source URL: {s.url}\nPassage: {extract_relevant_context(s.raw_text_snippet or '', claim.claim_text, max_chars=2000)}"
             for s in matching_sources[:3]
         ])
 
@@ -64,8 +94,8 @@ class DoubleChecker:
         try:
             res = self.client.chat_completion_json(
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=300,
-                temperature=0.0
+                max_tokens=600,
+                temperature=0.1
             )
             if res.get("entailed") is True:
                 primary_url = res.get("primary_url")
@@ -86,7 +116,7 @@ class DoubleChecker:
 
     def evaluate_check1_batch(self, claims: List[Claim], sources: List[EvidenceSource]) -> Dict[UUID, Dict[str, Any]]:
         """
-        Check 1 (High-Performance Batch Mode): Evaluates primary source entailment for all claims in a single LLM call.
+        Check 1 (High-Performance Batch Mode): Evaluates primary source entailment in optimized chunks of up to 10 claims.
         Returns dict mapping claim_id -> {'passed': bool, 'primary_source': EvidenceSource or None, 'reason': str}
         """
         results = {}
@@ -103,56 +133,61 @@ class DoubleChecker:
                 }
             return results
 
+        # Infer subject name from first claim text
+        subject_query = claims[0].claim_text if claims else ""
         passages_text = "\n\n".join([
-            f"[Source {idx+1} URL: {s.url}]\n{(s.raw_text_snippet or '')[:2000]}"
-            for idx, s in enumerate(tier1_sources[:4])
+            f"[Source {idx+1} URL: {s.url}]\n{extract_relevant_context(s.raw_text_snippet or '', subject_query, max_chars=1000)}"
+            for idx, s in enumerate(tier1_sources[:2])
         ])
 
-        claims_text = "\n".join([
-            f"[{i+1}] {c.claim_text}"
-            for i, c in enumerate(claims)
-        ])
+        chunk_size = 10
+        for start_i in range(0, len(claims), chunk_size):
+            chunk = claims[start_i:start_i + chunk_size]
+            claims_text = "\n".join([
+                f"[{i+1}] {c.claim_text}"
+                for i, c in enumerate(chunk)
+            ])
 
-        prompt = (
-            "You are an adversarial fact verification auditor.\n"
-            "Determine if each of the following Factual Claims is strictly entailed by ANY of the provided Tier-1 Primary Source passages.\n"
-            "Note: Treat standard date formats, honorifics, and role synonyms as semantically entailed if they state the same core fact.\n\n"
-            f"Tier-1 Source Passages:\n{passages_text}\n\n"
-            f"Factual Claims to Verify:\n{claims_text}\n\n"
-            "Return JSON with key 'evaluations', an array where each item corresponds to a claim in order:\n"
-            "- 'claim_index': integer (1, 2, ...)\n"
-            "- 'entailed': boolean (true if entailed by any Tier-1 source passage, false otherwise)\n"
-            "- 'primary_url': string (the exact Tier-1 Source URL that entailed it, or null)"
-        )
-
-        try:
-            resp = self.client.chat_completion_json(
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=2000,
-                temperature=0.0
+            prompt = (
+                "You are an adversarial fact verification auditor.\n"
+                "Determine if each of the following Factual Claims is strictly entailed by ANY of the provided Tier-1 Primary Source passages.\n"
+                "Note: Treat standard date formats, honorifics, and role synonyms as semantically entailed if they state the same core fact.\n\n"
+                f"Tier-1 Source Passages:\n{passages_text}\n\n"
+                f"Factual Claims to Verify:\n{claims_text}\n\n"
+                "Return JSON with key 'evaluations', an array where each item corresponds to a claim in order:\n"
+                "- 'claim_index': integer (1, 2, ...)\n"
+                "- 'entailed': boolean (true if entailed by any Tier-1 source passage, false otherwise)\n"
+                "- 'primary_url': string (the exact Tier-1 Source URL that entailed it, or null)"
             )
-            evals = resp.get("evaluations", [])
-            eval_map = {e.get("claim_index"): e for e in evals if "claim_index" in e}
 
-            for idx, c in enumerate(claims, 1):
-                ev = eval_map.get(idx)
-                if ev and ev.get("entailed") is True:
-                    p_url = ev.get("primary_url")
-                    src = next((s for s in tier1_sources if s.url == p_url), tier1_sources[0])
-                    results[c.claim_id] = {
-                        "passed": True,
-                        "primary_source": src,
-                        "reason": ev.get("explanation", "Tier-1 source entails claim.")
-                    }
-                else:
-                    results[c.claim_id] = {
-                        "passed": False,
-                        "primary_source": None,
-                        "reason": ev.get("explanation", "Tier-1 sources found but none semantically entailed the claim.") if ev else "Not entailed."
-                    }
-        except Exception:
-            for c in claims:
-                results[c.claim_id] = self.evaluate_check1_primary(c, sources)
+            try:
+                resp = self.client.chat_completion_json(
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=600,
+                    temperature=0.0
+                )
+                evals = resp.get("evaluations", [])
+                eval_map = {e.get("claim_index"): e for e in evals if "claim_index" in e}
+
+                for idx, c in enumerate(chunk, 1):
+                    ev = eval_map.get(idx)
+                    if ev and ev.get("entailed") is True:
+                        p_url = ev.get("primary_url")
+                        src = next((s for s in tier1_sources if s.url == p_url), tier1_sources[0])
+                        results[c.claim_id] = {
+                            "passed": True,
+                            "primary_source": src,
+                            "reason": ev.get("explanation", "Tier-1 source entails claim.")
+                        }
+                    else:
+                        results[c.claim_id] = {
+                            "passed": False,
+                            "primary_source": None,
+                            "reason": ev.get("explanation", "Tier-1 sources found but none semantically entailed the claim.") if ev else "Not entailed."
+                        }
+            except Exception:
+                for c in chunk:
+                    results[c.claim_id] = self.evaluate_check1_primary(c, sources)
 
         return results
 
